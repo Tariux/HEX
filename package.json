@@ -1,0 +1,15 @@
+{
+  "name": "hex",
+  "version": "1.0.0",
+  "description": "api service",
+  "main": "main.js",
+  "scripts": {
+    "test": "node run main.js"
+  },
+  "author": "opiumdev <opiumdev@proton.me>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "net": "^1.0.2"
+  }
+}
