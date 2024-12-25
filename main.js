@@ -1,5 +1,5 @@
+const MainLauncher = require("./src/infrastructure/adapters/MainLauncher");
 const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
-const MainLauncher = require("./src/infrastructure/launchers/MainLauncher");
 
 class HEX {
     static instance = null

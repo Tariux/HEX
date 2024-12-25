@@ -1,5 +1,5 @@
-const HttpLauncher = require('./http/HttpLauncher');
-const RpcLauncher = require('./rpc/RpcLauncher');
+const HttpLauncher = require('../adapters/http/HttpLauncher');
+const RpcLauncher = require('../adapters/rpc/RpcLauncher');
 
 class MainLauncher {
     constructor() {

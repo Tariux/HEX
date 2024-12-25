@@ -27,7 +27,7 @@ class ConfigCenter {
 
         console.log('[ConfigCenter] Config loaded');
         
-        this.#config = Object.freeze(finalConfig); // Immutable config
+        this.#config = Object.freeze(finalConfig);
         this.#initialized = true;
         return this.#config;
     }
