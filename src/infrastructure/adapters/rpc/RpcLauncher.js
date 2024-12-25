@@ -17,7 +17,8 @@ class RpcLauncher extends BaseLauncher {
         const rpcBasePath = path.join(__dirname, '..', '..', '..', 'application'); // Adjust path as needed
         loadRpcRoutes(rpcServer, rpcBasePath);
         await rpcServer.listen(this.#config);
-        this.log(`RPC Server is running on port ${this.#config.port}`);
+        this.log(`RPC server is running: http://${this.#config.host}:${this.#config.port}`);
+
     }
     
 }

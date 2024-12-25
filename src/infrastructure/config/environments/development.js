@@ -5,6 +5,7 @@ module.exports = {
     },
     "http": {
         "host": "localhost",
-        "port": 3005
+        "port": 3005,
+        "version": 2
     }
 }

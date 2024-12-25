@@ -1,8 +1,11 @@
+const path = require('path');
 
 class ConfigCenter {
-    static #instance; 
-    #config;        
+    static #instance;
+    #config;
     #initialized = false;
+
+    pwd
 
     constructor() {
         if (ConfigCenter.#instance) {
@@ -23,10 +26,19 @@ class ConfigCenter {
         const baseConfig = this.#loadConfigFile('default');
         const envConfig = this.#loadConfigFile(environment);
 
-        const finalConfig = { ...baseConfig, ...envConfig };
+        const finalConfig = {
+            ...baseConfig,
+            ...envConfig,
+            credentials: {
+                keyPath: path.join(process.cwd(), 'credentials', 'server-key.pem'),
+                certPath: path.join(process.cwd(), 'credentials', 'server-cert.crt'),
+            }
+        };
 
-        console.log('[ConfigCenter] Config loaded' , environment);
-        
+
+
+        console.log('[ConfigCenter] Config loaded', environment);
+
         this.#config = Object.freeze(finalConfig);
         this.#initialized = true;
         return this.#config;

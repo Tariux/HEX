@@ -1,12 +1,14 @@
 const express = require('express');
 
 class HttpServer {
+    status = false;
     constructor() {
         this.app = express();        
     }
 
     async listen(config) {
         return new Promise((resolve) => {
+            this.status = true;
             this.server = this.app.listen(config.port, resolve);
         });
     }
