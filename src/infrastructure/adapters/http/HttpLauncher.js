@@ -19,7 +19,7 @@ class HttpLauncher extends BaseLauncher {
 
     async start() {
         Promise.all(this.#servers.values().map((instance) => {
-            new instance().listen(this.#config);
+            new instance(this.#config).listen();
         })).then(() => {
             if (this.ssl) {
                 this.log(`HTTP/2 server: https://${this.#config.host}:${(typeof this.#config.ssl === 'number') ? this.#config.ssl : this.#config.port + 1}`);

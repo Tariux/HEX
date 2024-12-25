@@ -5,13 +5,13 @@ const generateCertificates = require('../../../../shared/utils/generateCertifica
 
 class Http2Server {
     status = false;
-    constructor() {
+    constructor(config) {
         this.credentials = ConfigCenter.getInstance().get('credentials');
+        this.port = (typeof config.ssl === 'number') ? config.ssl : config.port + 1;
     }
 
-    async listen(config) {
+    async listen() {
         this.cert = await generateCertificates(this.credentials.keyPath, this.credentials.certPath);
-        this.port = (typeof config.ssl === 'number') ? config.ssl : config.port + 1;
         if (!this.cert) {
             console.log(`[SSL] Failed to generated certificates`);
             return;
