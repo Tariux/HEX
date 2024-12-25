@@ -9,6 +9,7 @@
   "author": "opiumdev <opiumdev@proton.me>",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "net": "^1.0.2"
   }

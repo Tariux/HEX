@@ -1,10 +1,11 @@
 module.exports = { 
     "rpc": {
         "host": "localhost",
-        "port": 3001
+        "port": 9090
     },
     "http": {
         "host": "localhost",
-        "port": 3000
+        "port": 80,
+        "ssl": 443,
     }
 }

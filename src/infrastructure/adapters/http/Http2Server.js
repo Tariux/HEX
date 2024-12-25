@@ -10,9 +10,9 @@ class Http2Server {
     }
 
     async listen(config) {
-        const cert = await generateCertificates(this.credentials.keyPath, this.credentials.certPath);
-        
-        if (!cert) {
+        this.cert = await generateCertificates(this.credentials.keyPath, this.credentials.certPath);
+        this.port = (typeof config.ssl === 'number') ? config.ssl : config.port + 1;
+        if (!this.cert) {
             console.log(`[SSL] Failed to generated certificates`);
             return;
         } else {
@@ -31,7 +31,7 @@ class Http2Server {
         
         return new Promise((resolve) => {
             this.status = true;
-            this.server = this.app.listen(config.port, resolve);
+            this.server = this.app.listen(this.port, resolve);
         });
     }
     

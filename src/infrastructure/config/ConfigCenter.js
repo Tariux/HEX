@@ -1,4 +1,5 @@
 const path = require('path');
+require('dotenv').config();
 
 class ConfigCenter {
     static #instance;
@@ -21,7 +22,6 @@ class ConfigCenter {
         if (this.#initialized) {
             throw new Error('ConfigCenter has already been initialized.');
         }
-
         const environment = process.env.NODE_ENV || 'development';
         const baseConfig = this.#loadConfigFile('default');
         const envConfig = this.#loadConfigFile(environment);
