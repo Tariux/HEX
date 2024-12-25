@@ -6,20 +6,11 @@ class RpcServer {
         this.handlers = {};
     }
 
-    /**
-     * Registers a handler for an RPC method
-     * @param {string} method - The RPC method name
-     * @param {function} handler - The function to handle the RPC method
-     */
     registerMethod(method, handler) {
         this.handlers[method] = handler;
     }
 
-    /**
-     * Starts the RPC server
-     * @param {number} port - Port to listen on
-     */
-    listen(port) {
+    listen(config) {
         this.server.on('connection', (socket) => {
             socket.on('data', async (data) => {
                 try {
@@ -50,8 +41,7 @@ class RpcServer {
         });
 
         return new Promise((resolve) => {
-            this.server.listen(port, () => {
-                // console.log(`RPC Server is running on port ${port}`);
+            this.server.listen(config.port, () => {
                 resolve();
             });
         });

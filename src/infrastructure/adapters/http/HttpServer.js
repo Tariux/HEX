@@ -2,13 +2,12 @@ const express = require('express');
 
 class HttpServer {
     constructor() {
-        this.app = express();
+        this.app = express();        
     }
 
-
-    async listen(port) {
+    async listen(config) {
         return new Promise((resolve) => {
-            this.server = this.app.listen(port, resolve);
+            this.server = this.app.listen(config.port, resolve);
         });
     }
 

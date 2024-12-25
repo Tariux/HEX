@@ -25,7 +25,7 @@ class ConfigCenter {
 
         const finalConfig = { ...baseConfig, ...envConfig };
 
-        console.log('[ConfigCenter] Config loaded');
+        console.log('[ConfigCenter] Config loaded' , environment);
         
         this.#config = Object.freeze(finalConfig);
         this.#initialized = true;
