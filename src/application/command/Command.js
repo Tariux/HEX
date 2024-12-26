@@ -5,7 +5,7 @@ class Command {
     }
 
     log(message , args) {
-        console.log(`[Command(${this.accessType}): ${this.commandName}] ${message.toString()}` , args);
+        console.log(`[Command(${this.accessType}): ${this.commandName}] ${message.toString()}` , (args === undefined)  ? '' : args);
     }
 }
 

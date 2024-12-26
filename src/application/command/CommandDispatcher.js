@@ -33,8 +33,8 @@ class CommandDispatcher {
         files.forEach(file => {
             const filePath = path.join(handlersPath, file);
             if (path.extname(file) === '.js') {
-                const HandlerClass = require(filePath); 
-                const handlerInstance = new HandlerClass();
+                const CommandClass = require(filePath); 
+                const handlerInstance = new CommandClass();
 
                 if (handlerInstance.commandName && typeof handlerInstance.handle === 'function') {
                     this.registerHandler(handlerInstance.commandName, handlerInstance);

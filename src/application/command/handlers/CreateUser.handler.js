@@ -7,6 +7,6 @@ module.exports = class CreateUserCommand extends Command {
     }
 
     handle() {
-        console.log('Whoaaa, handle run');
+        this.log('Whoaaa, handle run');
     }
 }
