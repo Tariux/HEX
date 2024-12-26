@@ -1,16 +1,13 @@
 const CommandDispatcher = require("./command/CommandDispatcher");
+const EventManager = require("./events/EventManager");
 
 class Application {
     constructor() {
-        this.dispathcer = new CommandDispatcher(this.logger)
+        this.dispathcer = new CommandDispatcher(this.logger);
+        this.event = new EventManager();
     }
     run() {
         this.dispathcer.autoRegister();
-
-
-        setTimeout(() => {
-            this.dispathcer.dispatch('CreateUserCommand')
-        }, 2000);
     }
 
     logger(message) {

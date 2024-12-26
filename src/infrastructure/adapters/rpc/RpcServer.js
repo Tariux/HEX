@@ -1,4 +1,4 @@
-const net = require('net'); // Using a simple TCP server for demonstration
+const net = require('net'); 
 const BaseServer = require('../BaseServer');
 
 class RpcServer extends BaseServer {
@@ -17,10 +17,12 @@ class RpcServer extends BaseServer {
             socket.on('data', async (data) => {
                 try {
                     const request = JSON.parse(data.toString());
-                    const { method, params, id } = request;
+                    const { id, method, params } = request;
 
-                    if (this.handlers[method]) {
-                        const result = await this.handlers[method](params);
+                    const command = this.handleIncomingRequest({ type: 'RPC', data: request });
+
+                    if (this.handlers[command.method]) {
+                        const result = await this.handlers[command.method](command.parameters);
                         const response = { id, result, error: null };
                         socket.write(JSON.stringify(response));
                     } else {

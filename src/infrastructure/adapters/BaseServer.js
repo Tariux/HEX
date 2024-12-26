@@ -1,3 +1,6 @@
+const Command = require("../application/command/Command");
+const EventManager = require("../application/events/EventManager");
+
 class BaseServer {
     status = false;
 
@@ -5,6 +8,13 @@ class BaseServer {
         this.port = config.port;
         this.host = config.host;
         this.ssl = config.ssl;
+        this.emitter = EventManager.getInstance().emitter;
+    }
+
+    handleIncomingRequest(request) {
+        const command = new Command(request);
+        this.emitter.publish(command.pattern(), command.data)
+        return command;
     }
 
     listen() {

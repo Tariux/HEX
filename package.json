@@ -9,9 +9,12 @@
   "author": "opiumdev <opiumdev@proton.me>",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.10.5",
     "chai": "^4.5.0",
     "dotenv": "^16.4.7",
+    "eventemitter2": "^6.4.9",
     "express": "^4.21.2",
+    "kafkajs": "^2.2.4",
     "mocha": "^11.0.1",
     "net": "^1.0.2"
   }

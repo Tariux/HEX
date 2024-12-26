@@ -12,7 +12,8 @@ class HttpServer extends BaseServer {
 
         try {
             this.app = http.createServer((req, res) => {
-                // Basic request handling
+                const command = this.handleIncomingRequest({ type: 'HTTP', data: req });
+
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.end('Hello, HTTP!');
             });

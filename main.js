@@ -1,5 +1,5 @@
-const Application = require("./src/application/Application");
 const MainLauncher = require("./src/infrastructure/adapters/MainLauncher");
+const Application = require("./src/infrastructure/application/Application");
 const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
 
 class HEX {

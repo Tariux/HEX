@@ -16,18 +16,18 @@ class CommandDispatcher {
     }
 
     dispatch(command) {
-        const handler = this.handlers.get(command);
+        const handler = this.handlers.get(command.commandName);
         if (!handler) {
-            throw new Error(`No handler found for command: ${command}`);
+            throw new Error(`No handler found for command: ${command.commandName}`);
         }
         if (typeof handler.handle !== 'function') {
-            throw new Error(`No handle function found for command: ${command}`, handler.handle);
+            throw new Error(`No handle function found for command: ${command.commandName}`, handler.handle);
         }
         return handler.handle(handler.payload || {});
     }
 
     autoRegister() {
-        const handlersPath = path.join(__dirname, 'handlers');
+        const handlersPath = path.join(__dirname, '../../../application', 'command');
         const files = fs.readdirSync(handlersPath);
 
         files.forEach(file => {
