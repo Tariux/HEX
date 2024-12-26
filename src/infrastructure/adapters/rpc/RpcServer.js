@@ -1,7 +1,9 @@
 const net = require('net'); // Using a simple TCP server for demonstration
+const BaseServer = require('../BaseServer');
 
-class RpcServer {
-    constructor() {
+class RpcServer extends BaseServer {
+    constructor(config) {
+        super(config);
         this.server = net.createServer();
         this.handlers = {};
     }
@@ -10,7 +12,7 @@ class RpcServer {
         this.handlers[method] = handler;
     }
 
-    listen(config) {
+    listen() {
         this.server.on('connection', (socket) => {
             socket.on('data', async (data) => {
                 try {
@@ -41,7 +43,15 @@ class RpcServer {
         });
 
         return new Promise((resolve) => {
-            this.server.listen(config.port, () => {
+            this.server.listen(this.port, () => {
+                resolve();
+            });
+        });
+    }
+
+    stop() {
+        return new Promise((resolve) => {
+            this.server.close(() => {
                 resolve();
             });
         });

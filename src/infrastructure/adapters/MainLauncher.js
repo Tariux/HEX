@@ -9,26 +9,22 @@ class MainLauncher {
         ];
     }
 
-    /**
-     * Starts all launchers in parallel.
-     */
-    async start() {
+    start() {
         console.log('[All] Starting services...');
-        await Promise.all(this.launchers.map((launcher) => launcher.start()));
-        console.log('[All] services are running.');
+        return Promise.all(this.launchers.map((launcher) => launcher.start())).then(() => {
+            console.log('[All] services are running.');
+        });
     }
 
     /**
      * Stops all launchers in sequence.
      */
-    async stop() {
-        console.log('Stopping all services...');
-        for (const launcher of this.launchers) {
-            if (launcher.stop) {
-                await launcher.stop();
-            }
-        }
-        console.log('All services stopped.');
+    stop() {
+        console.log('[All] Stopping services...' );
+        return Promise.all(this.launchers.map((launcher) => launcher.stop())).then(() => {
+            console.log('[All] services stopped.');
+            process.exit(1);
+        });
     }
 }
 

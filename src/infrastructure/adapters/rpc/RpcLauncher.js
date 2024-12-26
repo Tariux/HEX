@@ -1,26 +1,16 @@
 const ConfigCenter = require('../../config/ConfigCenter');
 const BaseLauncher = require('../BaseLauncher');
-const loadRpcRoutes = require('./LoadRpcRoutes');
 const RpcServer = require('./RpcServer');
-const path = require('path');
 
 class RpcLauncher extends BaseLauncher {
     #config = null;
+    servers = new Map();
     constructor() {
         super('RpcLauncher');
         this.#config = ConfigCenter.getInstance().get('rpc');
-        this.rpcServer = new RpcServer();
+        this.servers.set('rpc' , new RpcServer(this.#config))
     }
 
-    async start() {
-        const rpcServer = new RpcServer();
-        const rpcBasePath = path.join(__dirname, '..', '..', '..', 'application'); // Adjust path as needed
-        loadRpcRoutes(rpcServer, rpcBasePath);
-        await rpcServer.listen(this.#config);
-        this.log(`RPC server is running: http://${this.#config.host}:${this.#config.port}`);
-
-    }
-    
 }
 
 module.exports = RpcLauncher;
