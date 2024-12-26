@@ -1,3 +1,4 @@
+const Application = require("./src/application/Application");
 const MainLauncher = require("./src/infrastructure/adapters/MainLauncher");
 const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
 
@@ -6,11 +7,13 @@ class HEX {
     constructor() {
         this.config = ConfigCenter.getInstance().init();
         this.launcher = new MainLauncher();
+        this.application = new Application();
     }
 
     launch() {
         return new Promise((resolve, reject) => {
             this.launcher.start().then(() => {
+                this.application.run();
                 console.log("[HEX] is running");
                 resolve(true);
             }).catch((err) => {

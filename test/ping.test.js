@@ -19,6 +19,6 @@ describe('Startup tests:', () => {
     })
 })
 
-after(async () => {
-    await hex.stop();
-})
+// after(async () => {
+//     await hex.stop();
+// })

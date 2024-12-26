@@ -10,9 +10,9 @@ class MainLauncher {
     }
 
     start() {
-        console.log('[All] Starting services...');
+        console.log('[Launcher] Starting services...');
         return Promise.all(this.launchers.map((launcher) => launcher.start())).then(() => {
-            console.log('[All] services are running.');
+            console.log('[Launcher] services are running.');
         });
     }
 
@@ -20,9 +20,9 @@ class MainLauncher {
      * Stops all launchers in sequence.
      */
     stop() {
-        console.log('[All] Stopping services...' );
+        console.log('[Launcher] Stopping services...' );
         return Promise.all(this.launchers.map((launcher) => launcher.stop())).then(() => {
-            console.log('[All] services stopped.');
+            console.log('[Launcher] services stopped.');
             process.exit(1);
         });
     }
