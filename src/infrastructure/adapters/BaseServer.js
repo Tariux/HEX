@@ -19,10 +19,12 @@ class BaseServer {
             this.emitter.subscribe(responsePattern, (response) => {
                 resolve(response);
             });
-
             setTimeout(() => {
-                resolve('timeout');
-            }, 5000);
+                console.log('TIME OUT');
+                resolve({
+                    result : 'timeout'
+                });
+            }, 2000);
         });
         this.emitter.publish(requestPattern, command);
         return incoming;

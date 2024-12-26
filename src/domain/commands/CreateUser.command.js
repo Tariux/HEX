@@ -7,9 +7,12 @@ module.exports = class GetUserCommand {
         this.protocol = 'HTTP';
         this.method = 'GET';
         this.target = '/create'
+        this.contentType = 'text/json'
     }
 
     handle() {
-        return "get GetUserCommand";
+        return {
+            message: "get GetUserCommand"
+        };
     }
 }

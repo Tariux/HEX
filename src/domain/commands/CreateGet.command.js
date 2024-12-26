@@ -6,10 +6,14 @@ module.exports = class CreateUserCommand {
         this.type = 'REQUEST';
         this.protocol = 'HTTP';
         this.method = 'GET';
-        this.target = '/get'
+        this.target = '/get';
+        this.contentType = 'text/json'
+
     }
 
     handle() {
-        return "create CreateUserCommand";
+        return {
+            message: "create CreateUserCommand"
+        };
     }
 }

@@ -27,8 +27,16 @@ class Http2Server extends BaseServer {
 
         this.app = http2.createSecureServer(serverOptions, (req, res) => {
             this.handleIncomingRequest({ type: 'HTTPS', data: req }).then(response => {
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end(response);
+                const contentType = response?.handler?.contentType || 'text/plain';
+                res.writeHead(response.statusCode || 400, { 'Content-Type': contentType });
+                switch (contentType) {
+                    case 'text/json':
+                        res.end(JSON.stringify(response.result));
+                        break;
+                    default:
+                        res.end(response.result.toString());
+                        break;
+                }
             });
         });
 

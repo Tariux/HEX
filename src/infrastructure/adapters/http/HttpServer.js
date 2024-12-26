@@ -14,8 +14,16 @@ class HttpServer extends BaseServer {
         try {
             this.app = http.createServer((req, res) => {
                 this.handleIncomingRequest({ type: 'HTTP', data: req }).then(response => {
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.end(response);
+                    const contentType = response?.handler?.contentType || 'text/plain';
+                    res.writeHead(response.statusCode || 400, { 'Content-Type': contentType });
+                    switch (contentType) {
+                        case 'text/json':
+                            res.end(JSON.stringify(response.result));
+                            break;
+                        default:
+                            res.end(response.result.toString());
+                            break;
+                    }
                 });
             });
 

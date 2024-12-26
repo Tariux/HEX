@@ -48,7 +48,11 @@ class CommandDispatcher {
                     const responsePattern = createPattern({...handlerInstance, type: 'RESPONSE'});
                     this.registerHandler(requestPattern, handlerInstance);
                     this.emitter.subscribe(requestPattern, () => {
-                        this.emitter.publish(responsePattern, this.dispatch(requestPattern))
+                        this.emitter.publish(responsePattern, {
+                            result: this.dispatch(requestPattern),
+                            handler: handlerInstance,
+                            statusCode: 200,
+                        })
                     });
                     this.log(`Registered handler for command: ${requestPattern}`);
                 } else {
