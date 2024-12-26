@@ -34,7 +34,7 @@ class CommandDispatcher {
             return pattern
         }
 
-        const handlersPath = path.join(__dirname, '../../../application', 'command');
+        const handlersPath = path.join(__dirname, '../../../domain', 'commands');
         const files = fs.readdirSync(handlersPath);
 
         files.forEach(file => {
