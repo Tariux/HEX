@@ -3,9 +3,13 @@ class Command {
         this.#parseCommandFromRequest(request);
     }
 
+    static pattern(data) {
+        const { type, protocol, method, target } = data;
+        return `COMMAND:${type}.${protocol}:${method}:${target.toUpperCase()}`;
+    }
+
     pattern() {
-        const { type, protocol, method, target } = this.data;
-        return `COMMAND:${type}.${protocol}:${method}:${target}`;
+        return Command.pattern(this.data);
     }
 
     #parseCommandFromRequest(request) {
@@ -40,7 +44,7 @@ class Command {
             type: 'REQUEST',
             protocol: protocol.toUpperCase(),
             method: method.toUpperCase(),
-            target: url,
+            target: url.toUpperCase(),
             httpVersion,
             statusCode,
             payload: body || {},

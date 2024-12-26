@@ -34,7 +34,6 @@ class HEX {
             });
         });
     }
-
 }
 
 // ? If you reading this, I'm sorry for the mess, lol.

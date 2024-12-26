@@ -1,15 +1,15 @@
-module.exports = class GetUserCommand {
+module.exports = class CreateUserCommand {
 
     constructor() {
-        this.commandName = 'GetUserCommand';
+        this.commandName = 'CreateUserCommand';
         this.accessType = 'private';
         this.type = 'REQUEST';
         this.protocol = 'HTTP';
         this.method = 'GET';
-        this.target = '/create'
+        this.target = '/get'
     }
 
     handle() {
-        return "get GetUserCommand";
+        return "create CreateUserCommand";
     }
 }

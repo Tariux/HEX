@@ -1,5 +1,6 @@
 const http = require('http');
 const BaseServer = require('../BaseServer');
+const { response } = require('express');
 
 class HttpServer extends BaseServer {
     status = false;
@@ -12,10 +13,10 @@ class HttpServer extends BaseServer {
 
         try {
             this.app = http.createServer((req, res) => {
-                const command = this.handleIncomingRequest({ type: 'HTTP', data: req });
-
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end('Hello, HTTP!');
+                this.handleIncomingRequest({ type: 'HTTP', data: req }).then(response => {
+                    res.writeHead(200, { 'Content-Type': 'text/plain' });
+                    res.end(response);
+                });
             });
 
             return new Promise((resolve) => {

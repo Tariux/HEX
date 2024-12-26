@@ -13,8 +13,19 @@ class BaseServer {
 
     handleIncomingRequest(request) {
         const command = new Command(request);
-        this.emitter.publish(command.pattern(), command.data)
-        return command;
+        const requestPattern = command.pattern();
+        const responsePattern = Command.pattern({...command.data, type: 'RESPONSE'});
+        const incoming = new Promise((resolve, reject) => {
+            this.emitter.subscribe(responsePattern, (response) => {
+                resolve(response);
+            });
+
+            setTimeout(() => {
+                resolve('timeout');
+            }, 5000);
+        });
+        this.emitter.publish(requestPattern, command);
+        return incoming;
     }
 
     listen() {

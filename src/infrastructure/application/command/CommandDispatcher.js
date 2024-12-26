@@ -1,11 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const EventManager = require('../events/EventManager');
 const Command = require('./Command');
 
 class CommandDispatcher {
     constructor(logger = console) {
         this.log = logger;
         this.handlers = new Map();
+        this.emitter = EventManager.getInstance().emitter;
     }
 
     registerHandler(commandName, handler) {
@@ -15,18 +17,23 @@ class CommandDispatcher {
         this.handlers.set(commandName, handler);
     }
 
-    dispatch(command) {
-        const handler = this.handlers.get(command.commandName);
+    dispatch(commandName) {
+        const handler = this.handlers.get(commandName);
         if (!handler) {
-            throw new Error(`No handler found for command: ${command.commandName}`);
+            throw new Error(`No handler found for command: ${commandName}`);
         }
         if (typeof handler.handle !== 'function') {
-            throw new Error(`No handle function found for command: ${command.commandName}`, handler.handle);
+            throw new Error(`No handle function found for command: ${commandName}`, handler.handle);
         }
         return handler.handle(handler.payload || {});
     }
 
     autoRegister() {
+        const createPattern = (handlerInstance) => {
+            const pattern = Command.pattern(handlerInstance)
+            return pattern
+        }
+
         const handlersPath = path.join(__dirname, '../../../application', 'command');
         const files = fs.readdirSync(handlersPath);
 
@@ -37,8 +44,13 @@ class CommandDispatcher {
                 const handlerInstance = new CommandClass();
 
                 if (handlerInstance.commandName && typeof handlerInstance.handle === 'function') {
-                    this.registerHandler(handlerInstance.commandName, handlerInstance);
-                    this.log(`Registered handler for command: ${handlerInstance.commandName}`);
+                    const requestPattern = createPattern(handlerInstance);
+                    const responsePattern = createPattern({...handlerInstance, type: 'RESPONSE'});
+                    this.registerHandler(requestPattern, handlerInstance);
+                    this.emitter.subscribe(requestPattern, () => {
+                        this.emitter.publish(responsePattern, this.dispatch(requestPattern))
+                    });
+                    this.log(`Registered handler for command: ${requestPattern}`);
                 } else {
                     this.log(`Skipping file: ${file}. It does not export a valid handler.`);
                 }

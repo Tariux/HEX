@@ -26,9 +26,10 @@ class Http2Server extends BaseServer {
         };
 
         this.app = http2.createSecureServer(serverOptions, (req, res) => {
-            const command = this.handleIncomingRequest({ type: 'HTTPS', data: req });
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end('<h1>Hello, HTTP/2!</h1>');
+            this.handleIncomingRequest({ type: 'HTTPS', data: req }).then(response => {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(response);
+            });
         });
 
         return new Promise((resolve) => {

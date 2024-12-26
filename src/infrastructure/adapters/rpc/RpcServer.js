@@ -17,22 +17,7 @@ class RpcServer extends BaseServer {
             socket.on('data', async (data) => {
                 try {
                     const request = JSON.parse(data.toString());
-                    const { id, method, params } = request;
-
-                    const command = this.handleIncomingRequest({ type: 'RPC', data: request });
-
-                    if (this.handlers[command.method]) {
-                        const result = await this.handlers[command.method](command.parameters);
-                        const response = { id, result, error: null };
-                        socket.write(JSON.stringify(response));
-                    } else {
-                        const errorResponse = {
-                            id,
-                            result: null,
-                            error: `Method ${method} not found`,
-                        };
-                        socket.write(JSON.stringify(errorResponse));
-                    }
+                    return this.handleIncomingRequest({ type: 'RPC', data: request });
                 } catch (err) {
                     const errorResponse = {
                         id: null,
