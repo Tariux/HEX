@@ -1,6 +1,5 @@
 const http = require('http');
 const BaseServer = require('../BaseServer');
-const { response } = require('express');
 
 class HttpServer extends BaseServer {
     status = false;
@@ -10,20 +9,22 @@ class HttpServer extends BaseServer {
     }
 
     listen() {
-
         try {
             this.app = http.createServer((req, res) => {
-                this.handleIncomingRequest({ type: 'HTTP', data: req }).then(response => {
-                    const contentType = response?.handler?.contentType || 'text/plain';
-                    res.writeHead(response.statusCode || 400, { 'Content-Type': contentType });
+                this.handleIncomingRequest({ type: 'HTTP', data: req }).then(command => {
+                    const contentType = command?.dispatcher?.contentType || 'text/plain';
+                    res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });
                     switch (contentType) {
                         case 'text/json':
-                            res.end(JSON.stringify(response.result));
+                            res.end(JSON.stringify(command.response));
                             break;
                         default:
-                            res.end(response.result.toString());
+                            res.end(command.response.toString());
                             break;
                     }
+                }).catch((error) => {
+                    res.writeHead(400, { 'Content-Type': 'text/plain' });
+                    res.end(error.toString());
                 });
             });
 

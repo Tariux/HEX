@@ -9,8 +9,26 @@ class Command {
     }
 
     pattern() {
-        return Command.pattern(this.data);
+        this.signature = Command.pattern(this.data);
+        return this.signature;
     }
+
+    recordResponse(response) {
+        this.response = response;
+    }
+
+    recordDispatcher(dispatcher) {
+        this.dispatcher = dispatcher;
+    }
+
+    recordError(error) {
+        this.error = error;
+    }
+
+    recordStatusCode(status) {
+        this.statusCode = status;
+    }
+    
 
     #parseCommandFromRequest(request) {
         this.type = request.type;

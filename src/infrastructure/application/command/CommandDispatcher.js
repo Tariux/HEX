@@ -10,51 +10,64 @@ class CommandDispatcher {
         this.emitter = EventManager.getInstance().emitter;
     }
 
-    registerHandler(commandName, handler) {
-        if (this.handlers.has(commandName)) {
-            throw new Error(`Handler for command ${commandName} is already registered.`);
-        }
-        this.handlers.set(commandName, handler);
+    registerHandler(commandDescriptor, handler) {
+        commandDescriptor.routes.forEach(route => {
+            const pattern = Command.pattern({...commandDescriptor, ...route});
+            if (this.handlers.has(pattern)) {
+                throw new Error(`Handler for command pattern ${pattern} is already registered.`);
+            }
+            this.handlers.set(pattern, { handler, method: route.handler });
+        });
     }
 
-    dispatch(commandName) {
-        const handler = this.handlers.get(commandName);
-        if (!handler) {
-            throw new Error(`No handler found for command: ${commandName}`);
+    dispatch(pattern, payload = {}) {
+        const { handler, method } = this.handlers.get(pattern) || {};
+        if (!handler || typeof handler[method] !== 'function') {
+            throw new Error(`No handler or method found for pattern: ${pattern}`);
         }
-        if (typeof handler.handle !== 'function') {
-            throw new Error(`No handle function found for command: ${commandName}`, handler.handle);
-        }
-        return handler.handle(handler.payload || {});
+
+        return handler[method](payload);
     }
+
 
     autoRegister() {
-        const createPattern = (handlerInstance) => {
-            const pattern = Command.pattern(handlerInstance)
-            return pattern
-        }
-
         const handlersPath = path.join(__dirname, '../../../domain', 'commands');
         const files = fs.readdirSync(handlersPath);
-
+        
         files.forEach(file => {
+            
             const filePath = path.join(handlersPath, file);
-            if (path.extname(file) === '.js') {
-                const CommandClass = require(filePath); 
-                const handlerInstance = new CommandClass();
 
-                if (handlerInstance.commandName && typeof handlerInstance.handle === 'function') {
-                    const requestPattern = createPattern(handlerInstance);
-                    const responsePattern = createPattern({...handlerInstance, type: 'RESPONSE'});
-                    this.registerHandler(requestPattern, handlerInstance);
-                    this.emitter.subscribe(requestPattern, () => {
-                        this.emitter.publish(responsePattern, {
-                            result: this.dispatch(requestPattern),
-                            handler: handlerInstance,
-                            statusCode: 200,
-                        })
+            if (path.extname(file) === '.js') {
+                const CommandClass = require(filePath);
+
+                const handlerInstance = new CommandClass({});
+
+                if (handlerInstance.descriptor && handlerInstance.descriptor.routes) {
+                    this.registerHandler(handlerInstance.descriptor, handlerInstance);
+                    const routes = handlerInstance.descriptor.routes;
+                    delete handlerInstance.descriptor.routes;
+                    routes.forEach(route => {
+
+                        const dispatcher = {...handlerInstance.descriptor, ...route};
+                        const requestPattern = Command.pattern(dispatcher);
+                        this.emitter.subscribe(requestPattern, async (command) => {
+                            try {
+                                const response = await this.dispatch(requestPattern);
+                                command.recordResponse(response);
+                                command.recordStatusCode(200);
+                                this.emitter.publish(`${command.signature}:RESPONSE`, command);
+                            } catch (error) {
+                                command.recordError(error);
+                                command.recordStatusCode(401);
+                                this.emitter.publish(`${command.signature}:RESPONSE`, command);
+                            } finally {
+                                command.recordDispatcher(dispatcher);
+                            }
+                        });
+
+                        this.log(`Registered handler for pattern: ${requestPattern}`);
                     });
-                    this.log(`Registered handler for command: ${requestPattern}`);
                 } else {
                     this.log(`Skipping file: ${file}. It does not export a valid handler.`);
                 }

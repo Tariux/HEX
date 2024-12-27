@@ -14,28 +14,27 @@ class BaseServer {
     handleIncomingRequest(request) {
         const command = new Command(request);
         const requestPattern = command.pattern();
-        const responsePattern = Command.pattern({...command.data, type: 'RESPONSE'});
+        const responsePattern = `${requestPattern}:RESPONSE`;
+
         const incoming = new Promise((resolve, reject) => {
-            this.emitter.subscribe(responsePattern, (response) => {
-                resolve(response);
-            });
             setTimeout(() => {
-                console.log('TIME OUT');
-                resolve({
-                    result : 'timeout'
-                });
+                reject('timeout');
             }, 2000);
+            this.emitter.subscribe(responsePattern, (command) => {
+                resolve(command);
+            });
         });
         this.emitter.publish(requestPattern, command);
         return incoming;
+
     }
 
     listen() {
-        throw new Error(`Listen method not implemented in ${this.name}`);
+        throw new Error(`Listen method not implemented in ${this.constructor.name}`);
     }
 
     stop() {
-        throw new Error(`Stop method not implemented in ${this.name}`);
+        throw new Error(`Stop method not implemented in ${this.constructor.name}`);
     }
 
     updateStatus(status) {
