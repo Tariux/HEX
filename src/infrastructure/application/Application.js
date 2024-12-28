@@ -4,9 +4,9 @@ const Loader = require("./loader/Loader");
 
 class Application {
     constructor() {
+        this.loader = new Loader();
         this.dispathcer = new CommandDispatcher(this.logger);
         this.event = new EventManager();
-        this.loader = new Loader();
     }
     run() {
         this.loader.registerLoaders();

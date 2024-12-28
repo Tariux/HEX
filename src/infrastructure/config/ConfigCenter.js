@@ -6,8 +6,6 @@ class ConfigCenter {
     #config;
     #initialized = false;
 
-    pwd
-
     constructor() {
         if (ConfigCenter.#instance) {
             throw new Error('ConfigCenter is a singleton. Use getInstance() to access it.');
