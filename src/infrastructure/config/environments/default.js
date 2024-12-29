@@ -1,4 +1,9 @@
+const path = require('path');
+
 module.exports = { 
+    "commandsPath": [
+        path.join(__dirname, "../../../domain/commands")
+    ],
     "database": {
         "host": "localhost",
         "port": 3306,

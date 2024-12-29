@@ -15,15 +15,16 @@ class BaseServer {
         const command = new Command(request);
         const requestPattern = command.pattern();
         const responsePattern = `${requestPattern}:RESPONSE`;
-
+        
         const incoming = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                reject('timeout');
-            }, 2000);
             this.emitter.subscribe(responsePattern, (command) => {
                 resolve(command);
             });
-        });
+            setTimeout(() => {
+                reject('timeout');
+            }, 2000);
+        })
+
         this.emitter.publish(requestPattern, command);
         return incoming;
 

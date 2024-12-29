@@ -13,19 +13,19 @@ class Command {
         return this.signature;
     }
 
-    recordResponse(response) {
+    setResponse(response) {
         this.response = response;
     }
 
-    recordDispatcher(dispatcher) {
+    setDispatcher(dispatcher) {
         this.dispatcher = dispatcher;
     }
 
-    recordError(error) {
+    setError(error) {
         this.error = error;
     }
 
-    recordStatusCode(status) {
+    setStatusCode(status) {
         this.statusCode = status;
     }
     

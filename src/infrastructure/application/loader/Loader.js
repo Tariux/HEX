@@ -3,7 +3,6 @@ const fs = require('fs');
 
 class Loader {
     static pool = new Map();
-
     static get(key) {
         const entity = Loader.pool.get(key);
         if (entity && typeof entity === 'object') {
