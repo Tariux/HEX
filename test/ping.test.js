@@ -1,9 +1,9 @@
-const HEX = require("../main");
+const hex = require("../main");
 const { expect } = require("chai"); // Import expect from chai
 
 let hex;
 before(async () => {
-    hex = new HEX();
+    hex = new hex();
     await hex.launch();
 })
 

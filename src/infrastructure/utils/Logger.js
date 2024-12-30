@@ -17,13 +17,6 @@ class Logger {
             reset: '\x1b[0m'   // Reset color
         };
 
-        // Symbols for log levels
-        this.symbolMap = {
-            debug: '➤',
-            info: 'ℹ',
-            warn: '⚠',
-            error: '✖'
-        };
     }
 
     setLogLevel(level) {
@@ -36,14 +29,13 @@ class Logger {
 
     log(level, message, meta = {}) {
         if (this.logLevels.indexOf(level) >= this.logLevels.indexOf(this.logLevel)) {
-            const symbol = this.symbolMap[level] || '';
             const color = this.colorMap[level] || this.colorMap.reset;
 
             // Build the message
-            const formattedMessage = `${color}${symbol}[${level.toUpperCase()}] ${message}${this.colorMap.reset}`;
+            const formattedMessage = `${color}[${level.toUpperCase()}] ${message}${this.colorMap.reset}`;
 
             if (Object.keys(meta).length > 0) {
-                console.log(`${formattedMessage}\n ${color}↳ meta: ${meta.toString()}`);
+                console.log(`${formattedMessage}\n${color}↳ meta: ${meta.toString()}`);
             } else {
                 console.log(formattedMessage);
             }

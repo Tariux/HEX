@@ -3,7 +3,7 @@ const Application = require("./src/infrastructure/application/Application");
 const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
 const { tools } = require("./src/infrastructure/utils/ToolManager");
 
-class HEX {
+class hex {
     static instance = null
     constructor() {
         this.config = ConfigCenter.getInstance().init();
@@ -15,7 +15,7 @@ class HEX {
         return new Promise((resolve, reject) => {
             this.launcher.start().then(() => {
                 this.application.run();
-                tools.logger.info("HEX is running");
+                tools.logger.info("hex is running");
                 resolve(true);
             }).catch((error) => {
                 tools.logger.error('Error starting application:');
@@ -28,7 +28,7 @@ class HEX {
     stop() {
         return new Promise((resolve, reject) => {
             this.launcher.stop().then(() => {
-                tools.logger.info("[HEX] stopped");
+                tools.logger.info("[hex] stopped");
                 resolve(true);
             }).catch((error) => {
                 tools.logger.error('Error stopping application');
@@ -42,4 +42,4 @@ class HEX {
 // ? If you reading this, I'm sorry for the mess, lol.
 // ? but i will be happy if you collaborate with me to make this project better.
 
-module.exports = HEX;
+module.exports = hex;
