@@ -10,7 +10,7 @@ class Application {
     }
     run() {
         this.loader.registerLoaders();
-        this.dispathcer.autoRegister();
+        this.dispathcer.autoRegisterCommands();
     }
 
     logger(message) {

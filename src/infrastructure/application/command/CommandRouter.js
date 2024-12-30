@@ -1,92 +1,100 @@
 const ConfigCenter = require("../../config/ConfigCenter");
 const LoaderResolver = require("../loader/LoaderResolver");
-const fs = require('fs');
-const path = require('path');
-const Command = require("./Command");
+const fs = require("fs");
+const path = require("path");
 
 class CommandRouter {
-
-    constructor(dispatcher) {
+    constructor(dispatcher, logger = console) {
         this.dispatcher = dispatcher;
-        this.handlersPath = ConfigCenter.getInstance().get('commandsPath') || false;
+        this.handlersPath = ConfigCenter.getInstance().get("commandsPath") || false;
+        this.log = logger;
     }
 
     validateCommandFile(filePath) {
-        if (path.extname(filePath) !== '.js') {
-            return false;
-        }
-        let CommandClass;
+        if (path.extname(filePath) !== ".js") return false;
+
         try {
-            CommandClass = require(filePath);
-
+            const CommandClass = require(filePath);
+            return this.validateDescriptor(CommandClass.descriptor);
         } catch (error) {
-            console.log('[CommandRouter] error while loading ' + filePath, error );
-        }
-        if (!CommandClass) {
+            this.log(`[CommandRouter] Error while loading ${filePath}:`, error);
             return false;
         }
-
-        if (
-            !CommandClass?.descriptor ||
-            !CommandClass?.descriptor.commandName ||
-            !CommandClass?.descriptor.type ||
-            !CommandClass?.descriptor.protocol ||
-            !CommandClass?.descriptor.routes ||
-            typeof CommandClass?.descriptor.routes !== 'object'
-        ) {
-            return false;
-        }
-
-        return true;
     }
 
+    validateDescriptor(descriptor) {
+        return (
+            descriptor?.commandName &&
+            descriptor?.type &&
+            descriptor?.protocol &&
+            Array.isArray(descriptor?.routes)
+        );
+    }
 
+    loadEntities(loader) {
+        return LoaderResolver.resolveCommandEntities(loader) || {};
+    }
 
     registerCommand(filePath) {
-        if (!this.validateCommandFile(filePath)) {
-            console.log('[CommandRouter] error while validating ', filePath);
-            return;
+        try {
+            if (!this.validateCommandFile(filePath)) {
+                throw new Error(`Invalid command file: ${filePath}`);
+            }
+
+            const CommandClass = require(filePath);
+            const loadedEntities = this.loadEntities(CommandClass.descriptor.loader);
+            const handlerInstance = new CommandClass(loadedEntities);
+
+            handlerInstance.descriptor = CommandClass.descriptor;
+
+            if (handlerInstance.descriptor?.routes) {
+                this.dispatcher.registerCommandHandler(
+                    handlerInstance.descriptor,
+                    handlerInstance
+                );
+
+                const routes = handlerInstance.descriptor.routes;
+                delete handlerInstance.descriptor.routes;
+
+                routes.forEach((route) => {
+                    const descriptor = { ...handlerInstance.descriptor, ...route };
+                    const routeEntities = this.loadEntities(route.loader);
+                    this.dispatcher.subscribeToCommandPattern(descriptor, routeEntities);
+                });
+            } else {
+                this.log(
+                    `[CommandRouter] Skipping file: ${filePath}. Descriptor or routes are invalid.`
+                );
+            }
+        } catch (error) {
+            this.log(
+                `[CommandRouter] Failed to register command from ${filePath}:`,
+                error
+            );
         }
-        const CommandClass = require(filePath);
+    }
 
-        const loadedEntities = LoaderResolver.resolveCommandEntities(CommandClass.descriptor.loader);
-        const handlerInstance = new CommandClass(loadedEntities || undefined);
-
-        handlerInstance.descriptor = CommandClass.descriptor;
-
-        if (handlerInstance.descriptor && handlerInstance.descriptor.routes) {
-            this.dispatcher.registerHandler(handlerInstance.descriptor, handlerInstance);
-            const routes = handlerInstance.descriptor.routes;
-            delete handlerInstance.descriptor.routes;
-            routes.forEach(route => {
-                const descriptor = { ...handlerInstance.descriptor, ...route };
-                const loadedEntities = LoaderResolver.resolveCommandEntities(route.loader);
-                this.dispatcher.registerRouteListener(descriptor, loadedEntities || {})
-            });
-        } else {
-            this.log(`Skipping file: ${file}. It does not export a valid descriptor. make sure is static in your command`);
+    getCommandFiles() {
+        if (typeof this.handlersPath === "string") {
+            return fs
+                .readdirSync(this.handlersPath)
+                .map((file) => path.join(this.handlersPath, file));
         }
+        if (Array.isArray(this.handlersPath)) {
+            return this.handlersPath.flatMap((dir) =>
+                fs.readdirSync(dir).map((file) => path.join(dir, file))
+            );
+        }
+        throw new Error('[CommandRouter] No valid "commandsPath" found!');
     }
 
     registerCommands() {
-        if (typeof this.handlersPath === 'string') {
-            const files = fs.readdirSync(this.handlersPath);
-            files.forEach(file => {
-                const filePath = path.join(this.handlersPath, file);
-                this.registerCommand(filePath);
-            });
-        } else if (typeof this.handlersPath === 'object') {
-            this.handlersPath.forEach(key => {
-                const files = fs.readdirSync(key);
-                files.forEach(file => {
-                    const filePath = path.join(key, file);
-                    this.registerCommand(filePath);
-                });
-            });
-        } else {
-            console.log('[CommandRouter] error while registering commands, no "commandsPath" found!');
+        try {
+            const files = this.getCommandFiles();
+            files.forEach((file) => this.registerCommand(file));
+        } catch (error) {
+            this.log(`[CommandRouter] Error while registering commands:`, error);
         }
-
     }
 }
 
