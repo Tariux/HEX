@@ -1,5 +1,6 @@
 const HttpLauncher = require('../adapters/http/HttpLauncher');
 const RpcLauncher = require('../adapters/rpc/RpcLauncher');
+const { tools } = require('../utils/ToolManager');
 
 class MainLauncher {
     constructor() {
@@ -10,9 +11,8 @@ class MainLauncher {
     }
 
     start() {
-        console.log('[Launcher] Starting services...');
         return Promise.all(this.launchers.map((launcher) => launcher.start())).then(() => {
-            console.log('[Launcher] services are running.');
+            tools.logger.info('launchers are running.');
         });
     }
 
@@ -20,9 +20,8 @@ class MainLauncher {
      * Stops all launchers in sequence.
      */
     stop() {
-        console.log('[Launcher] Stopping services...' );
         return Promise.all(this.launchers.map((launcher) => launcher.stop())).then(() => {
-            console.log('[Launcher] services stopped.');
+            tools.logger.info('launchers are stopped.');
             process.exit(1);
         });
     }

@@ -1,13 +1,13 @@
 const ConfigCenter = require("../../config/ConfigCenter");
+const { tools } = require("../../utils/ToolManager");
 const LoaderResolver = require("../loader/LoaderResolver");
 const fs = require("fs");
 const path = require("path");
 
 class CommandRouter {
-    constructor(dispatcher, logger = console) {
+    constructor(dispatcher) {
         this.dispatcher = dispatcher;
         this.handlersPath = ConfigCenter.getInstance().get("commandsPath") || false;
-        this.log = logger;
     }
 
     validateCommandFile(filePath) {
@@ -17,8 +17,9 @@ class CommandRouter {
             const CommandClass = require(filePath);
             return this.validateDescriptor(CommandClass.descriptor);
         } catch (error) {
-            this.log(`[CommandRouter] Error while loading ${filePath}:`, error);
-            return false;
+            tools.logger.error(`cannot load entities`)
+            tools.logger.error(error)
+            return;
         }
     }
 
@@ -38,7 +39,8 @@ class CommandRouter {
     registerCommand(filePath) {
         try {
             if (!this.validateCommandFile(filePath)) {
-                throw new Error(`Invalid command file: ${filePath}`);
+                tools.logger.error(`Invalid command file` , filePath)
+                return;
             }
 
             const CommandClass = require(filePath);
@@ -62,15 +64,11 @@ class CommandRouter {
                     this.dispatcher.subscribeToCommandPattern(descriptor, routeEntities);
                 });
             } else {
-                this.log(
-                    `[CommandRouter] Skipping file: ${filePath}. Descriptor or routes are invalid.`
-                );
+                tools.logger.warn(`skipping file: ${filePath}. Descriptor or routes are invalid`)
             }
         } catch (error) {
-            this.log(
-                `[CommandRouter] Failed to register command from ${filePath}:`,
-                error
-            );
+            tools.logger.error(`failed to register command from` , filePath);
+            tools.logger.error(error);
         }
     }
 
@@ -85,6 +83,7 @@ class CommandRouter {
                 fs.readdirSync(dir).map((file) => path.join(dir, file))
             );
         }
+        tools.logger.error(`no valid "commandsPath" found`);
         throw new Error('[CommandRouter] No valid "commandsPath" found!');
     }
 
@@ -93,7 +92,8 @@ class CommandRouter {
             const files = this.getCommandFiles();
             files.forEach((file) => this.registerCommand(file));
         } catch (error) {
-            this.log(`[CommandRouter] Error while registering commands:`, error);
+            tools.logger.error(`error while registering commands`);
+            tools.logger.error(error);
         }
     }
 }

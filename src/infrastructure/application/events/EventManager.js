@@ -1,4 +1,5 @@
 const ConfigCenter = require("../../config/ConfigCenter");
+const { tools } = require("../../utils/ToolManager");
 
 class EventManager {
     static #instance = null;
@@ -10,8 +11,7 @@ class EventManager {
         this.config = ConfigCenter.getInstance().get('event');
         this.type = this.config.emitter || "eventemitter2"; 
         this.emitter = this.#initializeEmitter(this.type);
-        console.log('[EventManager] Created with type:', this.type);
-
+        tools.logger.info(`${this.type} event manager created`);
         EventManager.#instance = this;
     }
 

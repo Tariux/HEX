@@ -1,6 +1,7 @@
 const MainLauncher = require("./src/infrastructure/adapters/MainLauncher");
 const Application = require("./src/infrastructure/application/Application");
 const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
+const { tools } = require("./src/infrastructure/utils/ToolManager");
 
 class HEX {
     static instance = null
@@ -14,11 +15,12 @@ class HEX {
         return new Promise((resolve, reject) => {
             this.launcher.start().then(() => {
                 this.application.run();
-                console.log("[HEX] is running");
+                tools.logger.info("HEX is running");
                 resolve(true);
-            }).catch((err) => {
-                console.error('Error starting application:', err);
-                reject(err);
+            }).catch((error) => {
+                tools.logger.error('Error starting application:');
+                tools.logger.error(error);
+                reject(error);
             });
         });
     }
@@ -26,11 +28,12 @@ class HEX {
     stop() {
         return new Promise((resolve, reject) => {
             this.launcher.stop().then(() => {
-                console.log("[HEX] stopped");
+                tools.logger.info("[HEX] stopped");
                 resolve(true);
-            }).catch((err) => {
-                console.error('Error stopping application:', err);
-                reject(err);
+            }).catch((error) => {
+                tools.logger.error('Error stopping application');
+                tools.logger.error(error);
+                reject(error);
             });
         });
     }

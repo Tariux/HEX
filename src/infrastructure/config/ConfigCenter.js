@@ -1,4 +1,5 @@
 const path = require('path');
+const { tools } = require('../utils/ToolManager');
 require('dotenv').config();
 
 class ConfigCenter {
@@ -18,7 +19,8 @@ class ConfigCenter {
      */
     init() {
         if (this.#initialized) {
-            throw new Error('ConfigCenter has already been initialized.');
+            tools.logger.error('ConfigCenter has already been initialized');
+            return;
         }
         const environment = process.env.NODE_ENV || 'development';
         const baseConfig = this.#loadConfigFile('default');
@@ -33,9 +35,7 @@ class ConfigCenter {
             }
         };
 
-
-
-        console.log('[ConfigCenter] Config loaded', environment);
+        tools.logger.info('configs are loaded', environment);
 
         this.#config = Object.freeze(finalConfig);
         this.#initialized = true;
@@ -61,7 +61,7 @@ class ConfigCenter {
         try {
             return require(`./environments/${name}.js`);
         } catch (error) {
-            console.warn(`Configuration file ${name}.js not found. Returning empty object.`);
+            tools.logger.warn(`Configuration file ${name}.js not found. Returning empty object.`);
             return {};
         }
     }

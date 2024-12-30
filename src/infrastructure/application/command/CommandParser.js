@@ -1,3 +1,5 @@
+const { tools } = require("../../utils/ToolManager");
+
 class CommandParser {
     #request = null;
     constructor(request) {
@@ -20,7 +22,7 @@ class CommandParser {
                 break;
             default:
                 command = this.#genericRequestToCommand(this.#request.type, this.#request.data);
-                console.error('[Command] Unsupported request type:', this.#request.type);
+                tools.logger.error(`unsupported request type ${this.#request.type}`);
         }
         return {
             type: this.type,

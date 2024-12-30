@@ -1,3 +1,4 @@
+const { ToolManager } = require("../utils/ToolManager");
 const CommandDispatcher = require("./command/CommandDispatcher");
 const EventManager = require("./events/EventManager");
 const Loader = require("./loader/Loader");
@@ -5,7 +6,7 @@ const Loader = require("./loader/Loader");
 class Application {
     constructor() {
         this.loader = new Loader();
-        this.dispathcer = new CommandDispatcher(this.logger);
+        this.dispathcer = new CommandDispatcher();
         this.event = new EventManager();
     }
     run() {
@@ -13,9 +14,6 @@ class Application {
         this.dispathcer.autoRegisterCommands();
     }
 
-    logger(message) {
-        console.log(`[Application] ${message}`);
-    }
 }
 
 module.exports = Application;

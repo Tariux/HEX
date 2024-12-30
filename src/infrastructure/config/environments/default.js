@@ -4,6 +4,12 @@ module.exports = {
     "commandsPath": [
         path.join(__dirname, "../../../domain/commands")
     ],
+    "servicesPath": [
+        {
+            path: path.join(__dirname, "../../../domain/services"),
+            namespace: "domain.services"
+        }
+    ],
     "database": {
         "host": "localhost",
         "port": 3306,

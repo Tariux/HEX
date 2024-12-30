@@ -3,6 +3,7 @@ const fs = require('fs');
 const ConfigCenter = require('../../config/ConfigCenter');
 const generateCertificates = require('../../../../shared/utils/generateCertificates');
 const BaseServer = require('../BaseServer');
+const { tools } = require('../../utils/ToolManager');
 
 class Http2Server extends BaseServer {
     constructor(config) {
@@ -14,10 +15,10 @@ class Http2Server extends BaseServer {
     listen() {
         this.cert = generateCertificates(this.credentials.keyPath, this.credentials.certPath);
         if (!this.cert) {
-            this.log(`[SSL] Failed to generated certificates`);
+            tools.logger.error(`SSL: failed to generated certificates`);
             return;
         } else {
-            this.log(`[SSL] Certificates generated successfully`);
+            tools.logger.info(`SSL: certificates generated successfully`);
         }
 
         const serverOptions = {

@@ -46,9 +46,6 @@ class BaseServer {
         return this.status;
     }
 
-    log(message) {
-        console.log(`[${this.host}:${this.port}] ${message}`);
-    }
 }
 
 module.exports = BaseServer;

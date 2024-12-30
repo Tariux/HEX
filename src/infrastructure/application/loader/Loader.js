@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs');
+const ConfigCenter = require('../../config/ConfigCenter');
+const { tools } = require('../../utils/ToolManager');
 
 class Loader {
     static pool = new Map();
@@ -8,18 +10,19 @@ class Loader {
         if (entity && typeof entity === 'object') {
             return entity;
         } else {
-            console.log('[Loader] error: entity not found' , `${key}`)
+            tools.logger.error(`${key} entity not found`)
+            return;
         }
     }
 
     static load(entityPath, namespace = '*') {
         if (typeof namespace !== 'string') {
-            console.log(`[Loader] warning: namespace of entity is broken`, entityPath);
+            tools.logger.warn(`namespace of entity is broken`, entityPath)
             return;
         }
 
         if (path.extname(entityPath) !== '.js') {
-            console.log(`[Loader] warning: entity found but broken, ext should be .js`, entityPath);
+            tools.logger.warn(`entity found but broken, ext should be .js`, entityPath)
             return;
         }
 
@@ -28,23 +31,24 @@ class Loader {
             const Entity = require(entityPath);
             entityInstance = new Entity();
         } catch (error) {
-            console.log(`[Loader] error: file found but without entity, path:`, entityPath);
+            tools.logger.error(`file found but without entity`)
+            tools.logger.error(error)
             return;
         }
 
         const entityName = `${namespace}.${entityInstance.key}`;
 
         if (!(entityInstance.key && typeof entityInstance.key === 'string')) {
-            console.log(`[Loader] warning: entity found but broken, define a key.`, entityPath);
+            tools.logger.warn(`entity found but broken, define a key`, entityPath)
             return;
         }
         if (Loader.pool.get(entityName)) {
-            console.log(`[Loader] warning: entity found but loaded before`, entityName);
+            tools.logger.warn(`entity found but loaded before`, entityName)
             return;
         }
 
         Loader.pool.set(entityName, entityInstance);
-        console.log(`[Loader] Registered entity key: ${entityName}`, typeof entityInstance);
+        tools.logger.info(`registered entity key: ${entityName}`)
         return entityInstance;
 
     }
@@ -52,28 +56,48 @@ class Loader {
     constructor() {
         this.domainPath = path.join(__dirname, '../../../domain');
         this.loaders = [
-            { path: 'services', namespace: 'domain.services' },
+            ConfigCenter.getInstance().get('servicesPath'),
         ];
+    }
+
+    autoLoad(loader) {
+        if (typeof loader === 'object') {
+            loader.forEach(object => {
+                this.#registerLoaderObjectToPool(object);
+            });
+        } else {
+            tools.logger.error(`error while auto load, make sure loader is object`)
+        }
     }
 
     registerLoaders() {
         this.loaders.forEach(loader => {
-            this.#registerLoaderToPool(loader);
+            this.autoLoad(loader);
         });
     }
 
-    #registerLoaderToPool(loader) {
-        if (!loader.path) {
-            throw new Error('Define path for loader')
+    #registerLoaderObjectToPool(object) {
+
+        if (!object.path) {
+            tools.logger.warn(`entity found but broken, define a path`)
+            return;
         }
-        if (!loader.namespace) {
-            throw new Error('Define namespace for loader')
+        if (!object.namespace) {
+            tools.logger.warn(`entity found but broken, define a namespace`)
+            return;
         }
-        const entitysPath = path.join(this.domainPath, loader.path);
-        const entitys = fs.readdirSync(entitysPath);
-        entitys.forEach(entity => {
-            const entityPath = path.join(entitysPath, entity);
-            Loader.load(entityPath, loader.namespace)
+
+        let entities;
+        try {
+            entities = fs.readdirSync(object.path);
+        } catch (error) {
+            tools.logger.error(`cannot load entities` , object.path)
+            tools.logger.error(error)
+            return;
+        }
+        entities.forEach(entity => {
+            const entityPath = path.join(object.path, entity);
+            Loader.load(entityPath, object.namespace)
         });
     }
 }

@@ -1,3 +1,5 @@
+const { tools } = require("../utils/ToolManager");
+
 class BaseLauncher {
     constructor(name) {
         this.name = name;
@@ -9,16 +11,17 @@ class BaseLauncher {
      */
     start() {
         if (!this.servers) {
-            console.log('SERVER IS NOT IMPLEMENTED FOR LAUNCHER ', this.name);
+            tools.logger.error('define servers for launcher', this.name);
         }
         this.servers.forEach((instance, key) => {
             try {
                 instance.listen().then(() => {
-                    this.log(`${key} server is running: http${instance.ssl ? 's' : ''}://${instance.host || 'Uknown'}:${instance.port || 'NaN'}`);
+                    tools.logger.info(`${key} server is running: http${instance.ssl ? 's' : ''}://${instance.host || 'Uknown'}:${instance.port || 'NaN'}`);
                     instance.updateStatus(true);
                 });
             } catch (error) {
-                this.log(`${key} server failed`, error);
+                tools.logger.error(`${key} server failed`);
+                tools.logger.error(error);
             }
         });
     }
@@ -29,16 +32,17 @@ class BaseLauncher {
      */
     stop() {
         if (!this.servers) {
-            console.log('SERVER IS NOT IMPLEMENTED FOR LAUNCHER ', this.name);
+            tools.logger.error('define servers for launcher', this.name);
         }
         this.servers.forEach((instance, key) => {
             try {
                 instance.stop().then(() => {
-                    this.log(`${key} server is stopped`);
+                    tools.logger.info(`${key} server is stopped`);
                     instance.updateStatus(false);
                 });
             } catch (error) {
-                this.log(`${key} server stop failed`, error);
+                tools.logger.error(`${key} server stop failed`);
+                tools.logger.error(error);
             }
         });
     }
@@ -47,9 +51,6 @@ class BaseLauncher {
         return this.servers || false;
     }
 
-    log(message) {
-        console.log(`[${this.name}] ${message}`);
-    }
 }
 
 module.exports = BaseLauncher;

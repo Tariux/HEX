@@ -1,10 +1,10 @@
+const { tools } = require('../../utils/ToolManager');
 const EventManager = require('../events/EventManager');
 const Command = require('./Command');
 const CommandRouter = require('./CommandRouter');
 
 class CommandDispatcher {
-    constructor(logger = console, eventManager = EventManager, commandRouter = new CommandRouter(this)) {
-        this.log = logger;
+    constructor(eventManager = EventManager, commandRouter = new CommandRouter(this)) {
         this.handlers = new Map();
         this.emitter = eventManager.getInstance().emitter;
         this.commandRouter = commandRouter;
@@ -39,7 +39,8 @@ class CommandDispatcher {
                 command.setResponse(response);
                 command.setStatusCode(200);
             } catch (error) {
-                this.log.error('Route Listener Failed:', error);
+                tools.logger.error('publish to command failed');
+                tools.logger.error(error);
                 command.setError(error);
                 command.setStatusCode(401);
             } finally {
@@ -47,7 +48,7 @@ class CommandDispatcher {
                 this.emitter.publish(`${command.signature}:RESPONSE`, command);
             }
         });
-        this.log(`Registered handler for pattern: ${requestPattern}`);
+        tools.logger.info(`registered handler for pattern: ${requestPattern}`);
     }
 
     /**

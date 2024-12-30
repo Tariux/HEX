@@ -1,3 +1,4 @@
+const { tools } = require("../../utils/ToolManager");
 const CommandParser = require("./CommandParser");
 
 class Command {
@@ -10,9 +11,10 @@ class Command {
             const {data, type} = new CommandParser(request).parse();
             this.data = data;
             this.type = type;
-            console.log(`[Command] New Command: ${this.pattern()} at ${new Date().getTime()}`);
+            tools.logger.info(`+ new command: ${this.pattern()} at ${new Date().getTime()}`);
         } catch (error) {
-            console.log(`[Command] Command Failed` , error);
+            tools.logger.error(`command failed`);
+            tools.logger.error(error);
         }
     }
 

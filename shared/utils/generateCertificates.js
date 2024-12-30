@@ -9,7 +9,6 @@ async function checkCertificate(keyPath) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(() => {
       if (maxAttempts <= 0) {
-        console.log('END OF ATTEMPTS');
         clearInterval(interval);  // Stop checking when max attempts are exhausted
         reject(false);  // Reject the promise
       }
@@ -23,7 +22,6 @@ async function checkCertificate(keyPath) {
         }
       } catch (error) {
         // If the file doesn't exist or other error, do nothing and keep trying
-        console.log('File not found, trying again...');
       }
 
       maxAttempts--;  // Decrement attempts
