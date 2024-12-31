@@ -35,7 +35,7 @@ class Logger {
             const formattedMessage = `${color}[${level.toUpperCase()}] ${message}${this.colorMap.reset}`;
 
             if (Object.keys(meta).length > 0) {
-                console.log(`${formattedMessage}\n${color}↳ meta: ${meta.toString()}`);
+                console.log(`${formattedMessage}\n${color}↳ meta: ${typeof meta}`, meta);
             } else {
                 console.log(formattedMessage);
             }

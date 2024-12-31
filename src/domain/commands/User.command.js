@@ -1,3 +1,5 @@
+const Events = require("../../infrastructure/application/events/Events");
+
 class UserCommand {
     static descriptor = {
         commandName: 'UserCommand',
@@ -27,11 +29,20 @@ class UserCommand {
     }
 
     async getUser(AnotherService) {
+        Events.publish('UserCreatedEvent', {
+            userId: '123',
+        } , (incoming) => {
+            console.log('RESULT OF EVENT:::' , incoming);
+        });
         return this.orderService.createOrder();
     }
 
     async createUser(services) {
-        const ex = services.get('OrderMock');
+        Events.publish('UserCreatedEvent', {
+            userId: '123',
+        } , (incoming) => {
+            console.log('RESULT OF EVENT:::' , incoming);
+        });
         return this.userService.createUser();
     }
 };

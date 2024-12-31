@@ -14,7 +14,7 @@ class RpcServer extends BaseServer {
 
     listen() {
         this.server.on('connection', (socket) => {
-            socket.on('data', async (data) => {
+            socket.on('data', (data) => {
                 try {
                     const request = JSON.parse(data.toString());
                     return this.handleIncomingRequest({ type: 'RPC', data: request });

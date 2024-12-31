@@ -1,7 +1,6 @@
 const ConfigCenter = require("../../config/ConfigCenter");
 const { tools } = require("../../utils/ToolManager");
 const LoaderResolver = require("../loader/LoaderResolver");
-const fs = require("fs");
 const path = require("path");
 
 class CommandRouter {
@@ -12,7 +11,6 @@ class CommandRouter {
 
     validateCommandFile(filePath) {
         if (path.extname(filePath) !== ".js") return false;
-
         try {
             const CommandClass = require(filePath);
             return this.validateDescriptor(CommandClass.descriptor);
@@ -33,7 +31,7 @@ class CommandRouter {
     }
 
     loadEntities(loader) {
-        return LoaderResolver.resolveCommandEntities(loader) || {};
+        return LoaderResolver.resolveLoaderEntities(loader) || {};
     }
 
     registerCommand(filePath) {
@@ -72,24 +70,9 @@ class CommandRouter {
         }
     }
 
-    getCommandFiles() {
-        if (typeof this.handlersPath === "string") {
-            return fs
-                .readdirSync(this.handlersPath)
-                .map((file) => path.join(this.handlersPath, file));
-        }
-        if (Array.isArray(this.handlersPath)) {
-            return this.handlersPath.flatMap((dir) =>
-                fs.readdirSync(dir).map((file) => path.join(dir, file))
-            );
-        }
-        tools.logger.error(`no valid "commandsPath" found`);
-        throw new Error('[CommandRouter] No valid "commandsPath" found!');
-    }
-
     registerCommands() {
         try {
-            const files = this.getCommandFiles();
+            const files = LoaderResolver.getFiles(this.handlersPath);
             files.forEach((file) => this.registerCommand(file));
         } catch (error) {
             tools.logger.error(`error while registering commands`);

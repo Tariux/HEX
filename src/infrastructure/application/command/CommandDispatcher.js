@@ -4,7 +4,10 @@ const Command = require('./Command');
 const CommandRouter = require('./CommandRouter');
 
 class CommandDispatcher {
-    constructor(eventManager = EventManager, commandRouter = new CommandRouter(this)) {
+    constructor(
+        eventManager = EventManager,
+        commandRouter = new CommandRouter(this)
+    ) {
         this.handlers = new Map();
         this.emitter = eventManager.getInstance().emitter;
         this.commandRouter = commandRouter;
@@ -33,18 +36,19 @@ class CommandDispatcher {
     subscribeToCommandPattern(descriptor, payload = {}) {
         if (!descriptor) return;
         const requestPattern = Command.pattern(descriptor);
-        this.emitter.subscribe(requestPattern, async (command) => {
+        this.emitter.subscribe(requestPattern, (command) => {
             try {
-                const response = await this.dispatchCommand(requestPattern, payload);
-                command.setResponse(response);
-                command.setStatusCode(200);
+                this.dispatchCommand(requestPattern, payload).then(response => {
+                    command.setResponse(response);
+                    command.setStatusCode(200);
+                    command.setDispatcher(descriptor);
+                    this.emitter.publish(`${command.signature}:RESPONSE`, command);
+                });
             } catch (error) {
                 tools.logger.error('publish to command failed');
                 tools.logger.error(error);
                 command.setError(error);
                 command.setStatusCode(401);
-            } finally {
-                command.setDispatcher(descriptor);
                 this.emitter.publish(`${command.signature}:RESPONSE`, command);
             }
         });
@@ -60,7 +64,7 @@ class CommandDispatcher {
     async dispatchCommand(pattern, payload = {}) {
         const { handler, method } = this.handlers.get(pattern) || {};
         if (!handler || typeof handler[method] !== 'function') {
-            throw new Error(`Handler or method '${method}' not found for pattern: '${pattern}'.`);
+            throw new Error(`handler or method '${method}' not found for pattern: '${pattern}'.`);
         }
         return handler[method](payload);
     }
@@ -68,7 +72,7 @@ class CommandDispatcher {
     /**
      * Automatically registers commands via the CommandRouter.
      */
-    autoRegisterCommands() {
+    registerCommands() {
         this.commandRouter.registerCommands();
     }
 }

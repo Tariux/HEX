@@ -4,6 +4,9 @@ module.exports = {
     "commandsPath": [
         path.join(__dirname, "../../../domain/commands")
     ],
+    "eventsPath": [
+        path.join(__dirname, "../../../domain/events")
+    ],
     "servicesPath": [
         {
             path: path.join(__dirname, "../../../domain/services"),
