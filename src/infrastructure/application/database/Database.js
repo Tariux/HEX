@@ -1,7 +1,9 @@
 const ConfigCenter = require('../../config/ConfigCenter');
 const { tools } = require('../../utils/ToolManager');
+const DatabaseInterface = require('./DatabaseInterface');
 
 class Database {
+    static adapter = null;
     #config;
     adapters = {
         mongodb: require('./adapters/MongoInterface'),
@@ -23,7 +25,18 @@ class Database {
             tools.logger.warn('database config not found')
             return false;
         }
-        this.#loadDatabases();
+        if (Database.adapter !== null) {
+            tools.logger.warn('databases already loaded');
+            return false;
+        }
+        try {
+            this.#loadDatabases();
+            Database.adapter = new DatabaseInterface(this);
+        } catch (error) {
+            tools.logger.error(`error while loading databases`);
+            tools.logger.error(error);
+        }
+
     }
 
     #loadDatabases() {
@@ -35,7 +48,7 @@ class Database {
             }
             try {
                 this.databases[key] = new Adapter(options);
-                tools.logger.info(`database ${key} registerd with type: ${type}`);
+                tools.logger.info(`database ${key} registerd with type: ${type}`, options);
             } catch (error) {
                 tools.logger.error(`cannot load database ${key} type: ${type}`);
             }

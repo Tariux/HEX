@@ -31,11 +31,10 @@ class Logger {
         if (this.logLevels.indexOf(level) >= this.logLevels.indexOf(this.logLevel)) {
             const color = this.colorMap[level] || this.colorMap.reset;
 
-            // Build the message
             const formattedMessage = `${color}[${level.toUpperCase()}] ${message}${this.colorMap.reset}`;
 
             if (Object.keys(meta).length > 0) {
-                console.log(`${formattedMessage}\n${color}↳ meta: ${typeof meta}`, meta);
+                console.log(`${formattedMessage}\n${color}↳ meta: ${typeof meta}`, `${JSON.stringify(meta, null, 2)}${this.colorMap.reset}`);
             } else {
                 console.log(formattedMessage);
             }
