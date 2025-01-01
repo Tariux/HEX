@@ -1,5 +1,6 @@
 const http = require('http');
 const BaseServer = require('../BaseServer');
+const url = require('url');
 
 class HttpServer extends BaseServer {
     status = false;
@@ -8,23 +9,57 @@ class HttpServer extends BaseServer {
         super(config);
     }
 
+    #parseQueryParams(target) {
+        const parsedUrl = url.parse(target, true);
+        return parsedUrl.query;
+    }
+    
     listen() {
         try {
             this.app = http.createServer((req, res) => {
-                this.handleIncomingRequest({ type: 'HTTP', data: req }).then(command => {
-                    const contentType = command?.dispatcher?.contentType || 'text/plain';
-                    res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });
-                    switch (contentType) {
-                        case 'text/json':
-                            res.end(JSON.stringify(command.response));
-                            break;
-                        default:
-                            res.end(command.response.toString());
-                            break;
+
+                const queryParams = this.#parseQueryParams(req.url);
+
+                let body = '';
+
+                // Collect incoming data chunks
+                req.on('data', (chunk) => {
+                    body += chunk.toString();
+                });
+
+                req.on('end', () => {
+                    let inputData = null;
+                    if (req.headers['content-type'] === 'application/json') {
+                        try {
+                            inputData = JSON.parse(body);
+                        } catch (error) {
+                            res.writeHead(400, { 'Content-Type': 'text/plain' });
+                            res.end('Invalid JSON format');
+                            return;
+                        }
                     }
-                }).catch((error) => {
-                    res.writeHead(400, { 'Content-Type': 'text/plain' });
-                    res.end(error.toString());
+
+                    // Handle the incoming request
+                    this.handleIncomingRequest({ type: 'HTTP', data: req, inputData, queryParams }).then(command => {
+                        const contentType = command?.dispatcher?.contentType || 'text/plain';
+                        res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });
+                        switch (contentType) {
+                            case 'text/json':
+                                res.end(JSON.stringify(command.response));
+                                break;
+                            default:
+                                res.end(command.response.toString());
+                                break;
+                        }
+                    }).catch((error) => {
+                        res.writeHead(400, { 'Content-Type': 'text/plain' });
+                        res.end(error.toString());
+                    });
+                });
+
+                req.on('error', (error) => {
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end(`Request error: ${error.message}`);
                 });
             });
 

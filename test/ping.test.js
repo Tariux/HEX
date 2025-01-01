@@ -1,24 +1,25 @@
 const hex = require("../main");
-const { expect } = require("chai"); // Import expect from chai
+const axios = require("axios"); // Import axios for HTTP requests
 
-let hex;
-before(async () => {
-    hex = new hex();
-    await hex.launch();
-})
-
-describe('Startup tests:', () => {
-    it('check status started servers', () => {
-        const launchers = hex.launcher.launchers;
-        launchers.forEach(launcher => {
-            const servers = launcher.getServers();
-            servers.forEach(server => {
-                // expect(server.getStatus()).to.be.true;
-            });
+async function send(route) {
+    try {
+        const response = await axios.post(route, {
+            // Include data to send with the POST request
+            name: "Test User",
+            role: "tester"
         });
-    })
-})
+        console.log("Response:", response.data); // Log the response data
+    } catch (error) {
+        console.error("Error making POST request:", error);
+    }
+}
 
-// after(async () => {
-//     await hex.stop();
-// })
+async function ping() {
+    const Hex = new hex(); // Initialize the Hex instance
+    await Hex.launch(); // Launch the application
+
+    await send("http://localhost:80/users");
+    // await send("https://localhost:80/users");
+
+}
+ping()

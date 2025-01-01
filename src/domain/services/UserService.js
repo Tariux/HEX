@@ -1,4 +1,5 @@
 const Database = require("../../infrastructure/application/database/Database");
+const UserRepository = require("../repositories/UserRepository");
 
 class UserService {
   key = 'User';
@@ -8,6 +9,7 @@ class UserService {
 
   async #init() {    
     this.db = await Database.adapter.getConnection('mySqlLite2');
+    this.userRepository = new UserRepository(this.db);
   }
 
   async createUser() {

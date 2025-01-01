@@ -33,12 +33,12 @@ class CommandDispatcher {
      * @param {Object} descriptor - The descriptor for the command pattern.
      * @param {Object} [payload={}] - Optional payload data.
      */
-    subscribeToCommandPattern(descriptor, payload = {}) {
+    subscribeToCommandPattern(descriptor, loaded) {
         if (!descriptor) return;
         const requestPattern = Command.pattern(descriptor);
         this.emitter.subscribe(requestPattern, (command) => {
             try {
-                this.dispatchCommand(requestPattern, payload).then(response => {
+                this.dispatchCommand(requestPattern, loaded, command).then(response => {
                     command.setResponse(response);
                     command.setStatusCode(200);
                     command.setDispatcher(descriptor);
@@ -61,10 +61,13 @@ class CommandDispatcher {
      * @param {Object} payload - The payload for the command.
      * @returns {Promise} - The result of the command execution.
      */
-    async dispatchCommand(pattern, payload = {}) {
+    async dispatchCommand(pattern, payload = {}, command = false) {
         const { handler, method } = this.handlers.get(pattern) || {};
         if (!handler || typeof handler[method] !== 'function') {
             throw new Error(`handler or method '${method}' not found for pattern: '${pattern}'.`);
+        }
+        if (command) {
+            handler.command = command.data;
         }
         return handler[method](payload);
     }

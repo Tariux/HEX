@@ -15,7 +15,7 @@ class CommandParser {
         switch (this.#request.type) {
             case 'HTTP':
             case 'HTTPS':
-                command = this.#httpRequestToCommand(this.#request.data, this.#request.type);
+                command = this.#httpRequestToCommand(this.#request.data, this.#request.type, this.#request.inputData, this.#request.queryParams);
                 break;
             case 'RPC':
                 command = this.#rpcRequestToCommand(this.#request.data);
@@ -30,12 +30,19 @@ class CommandParser {
         };
     }
 
-    #httpRequestToCommand(httpRequest, protocol) {
+    #validateRoute(route) {
+        const regex = /^\/([^?]*)/; // Matches everything starting with / and excluding anything after ? (query params)
+        const match = route.match(regex);
+        return match ? `/${match[1]}`.toUpperCase() : null;  // Convert the result to uppercase
+    }
+
+    #httpRequestToCommand(httpRequest, protocol, inputData = false , queryParams = false) {
         const { method, url, body, query, httpVersion, headers, statusCode } = httpRequest;
 
         const meta = {
             timestamp: new Date().toISOString(),
-            // headers: headers || {},          
+            // headers: headers || {},  
+            httpVersion,
             contentType: headers?.['content-type'] || null,
         };
 
@@ -43,11 +50,10 @@ class CommandParser {
             type: 'REQUEST',
             protocol: protocol.toUpperCase(),
             method: method.toUpperCase(),
-            target: url.toUpperCase(),
-            httpVersion,
-            statusCode,
-            payload: body || {},
-            queryParams: query || {},
+            target: this.#validateRoute(url),
+            statusCode: statusCode || 400,
+            inputData: inputData || body || {},
+            queryParams: queryParams || {},
             meta,
         };
     }

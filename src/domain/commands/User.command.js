@@ -16,6 +16,29 @@ class UserCommand {
             },
             {
                 method: 'GET',
+                target: '/users',
+                handler: 'getUsers',
+                protocol: 'HTTPS',
+                // loader: 'domain.anotherNamespace.AnotherService',
+                contentType: 'text/json',
+            },
+            {
+                method: 'POST',
+                target: '/users',
+                handler: 'getUsers',
+                // loader: 'domain.anotherNamespace.AnotherService',
+                contentType: 'text/json',
+            },
+            {
+                method: 'POST',
+                target: '/users',
+                handler: 'getUsers',
+                protocol: 'HTTPS',
+                // loader: 'domain.anotherNamespace.AnotherService',
+                contentType: 'text/json',
+            },
+            {
+                method: 'GET',
                 target: '/user',
                 // loader: ['domain.services.UserMock' , 'domain.services.OrderMock'],
                 handler: 'createUser',
@@ -29,6 +52,8 @@ class UserCommand {
     }
 
     async getUsers() {
+        console.log('the command' , this.command);
+        
         return {
             status: 'success',
             message: 'Users retrieved successfully',

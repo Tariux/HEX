@@ -1,10 +1,10 @@
-const User = require("./entities/User");
-const Address = require("./valueObjects/Address");
+const UserEntity = require("../entities/User");
+const AddressObject = require("../valueObjects/Address");
 
 class UserAggregate {
     constructor(userId, firstName, lastName, email, street, city, zipCode) {
-        this.user = new User(userId, firstName, lastName, email);
-        this.address = new Address(street, city, zipCode);
+        this.user = new UserEntity(userId, firstName, lastName, email);
+        this.address = new AddressObject(street, city, zipCode);
     }
 
     updateEmail(newEmail) {
@@ -12,7 +12,7 @@ class UserAggregate {
     }
 
     updateAddress(newStreet, newCity, newZipCode) {
-        this.address = new Address(newStreet, newCity, newZipCode);
+        this.address = new AddressObject(newStreet, newCity, newZipCode);
     }
 
     getUserDetails() {
