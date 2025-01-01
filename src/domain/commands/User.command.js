@@ -103,11 +103,18 @@ class UserCommand {
     }
 
     async deleteUser() {
-        const {userID} = this.command.inputData;
+        const {uid} = this.command.queryParams;
+        const user = await this.userService.get(uid);
+        if (user) {
+            return {
+                status: 'success',
+                message: 'User deleted successfully',
+                data: await this.userService.delete(uid),
+            };
+        }
         return {
-            status: 'success',
-            message: 'User deleted successfully',
-            user: await this.userService.delete(userID),
+            status: 'fail',
+            message: 'User not found',
         };
     }
 };

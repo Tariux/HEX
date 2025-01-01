@@ -126,6 +126,7 @@ class UserRepository {
     try {
       await this.db.query('DELETE FROM users WHERE id = ?', [userId]);
       console.log('User deleted successfully');
+      return true;
     } catch (error) {
       console.error('Error deleting user:', error);
       throw error;

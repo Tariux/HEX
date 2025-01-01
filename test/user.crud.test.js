@@ -32,7 +32,7 @@ describe("User API Test Scenario (CRUD)", function () {
         expect(response.status).to.equal(200);
         expect(response.data.status).to.equal('success');
         userId = response.data.user;
-        cl.log('  userId:', userId); // 
+        cl.log('  userId:', userId); //
     });
 
     it("should update the user", async function () {
