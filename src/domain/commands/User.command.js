@@ -9,15 +9,15 @@ class UserCommand {
         routes: [
             {
                 method: 'GET',
-                target: '/user/:userId',
-                handler: 'getUser',
-                loader: 'domain.anotherNamespace.AnotherService',
+                target: '/users',
+                handler: 'getUsers',
+                // loader: 'domain.anotherNamespace.AnotherService',
                 contentType: 'text/json',
             },
             {
                 method: 'GET',
                 target: '/user',
-                loader: ['domain.services.UserMock' , 'domain.services.OrderMock'],
+                // loader: ['domain.services.UserMock' , 'domain.services.OrderMock'],
                 handler: 'createUser',
                 contentType: 'text/json',
             },
@@ -28,22 +28,23 @@ class UserCommand {
         this.orderService = services.get('Order');
     }
 
-    async getUser(AnotherService) {
-        Events.publish('UserCreatedEvent', {
-            userId: '123',
-        } , (incoming) => {
-            console.log('RESULT OF EVENT:::' , incoming);
-        });
-        return this.orderService.createOrder();
+    async getUsers() {
+        return {
+            status: 'success',
+            message: 'Users retrieved successfully',
+            data: await this.userService.getUsers(),
+        };
     }
 
-    async createUser(services) {
+    async createUser() {
         Events.publish('UserCreatedEvent', {
             userId: '123',
         } , (incoming) => {
-            console.log('RESULT OF EVENT:::' , incoming);
         });
-        return this.userService.createUser();
+        return {
+            status: 'success',
+            message: 'User created successfully',
+        };
     }
 };
 

@@ -48,9 +48,15 @@ class Database {
             }
             try {
                 this.databases[key] = new Adapter(options);
-                tools.logger.info(`database ${key} registerd with type: ${type}`, options);
+                if (typeof this.databases[key].initialQuery === 'function') {
+                    this.databases[key].initialQuery().then(() => {
+                        tools.logger.info(`initial query ran for database ${key} type: ${type}`);
+                    });
+                }
+                tools.logger.info(`database ${key} registerd with type: ${type}`);
             } catch (error) {
                 tools.logger.error(`cannot load database ${key} type: ${type}`);
+                tools.logger.error(error);
             }
         }
     }

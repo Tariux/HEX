@@ -1,7 +1,9 @@
+const { tools } = require("../../utils/ToolManager");
+
 class DatabaseInterface {
   constructor(dbManager) {
     this.dbManager = dbManager;
-    this.connections = {}; 
+    this.connections = {};
   }
 
   async getConnection(key) {
@@ -9,7 +11,6 @@ class DatabaseInterface {
       tools.logger.info(`using cached connection for ${key}`);
       return this.connections[key];
     }
-
     const db = this.dbManager.getDatabase(key);
     await db.connect();
     this.connections[key] = db;
@@ -35,7 +36,7 @@ class DatabaseInterface {
   }
 
   async query(key, ...args) {
-    const db = await this.getConnection(key);
+    const db = await this.getDatabase(key);
     return await db.query(...args);
   }
 

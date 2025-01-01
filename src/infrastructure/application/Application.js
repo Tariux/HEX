@@ -13,10 +13,10 @@ class Application {
         this.database = new Database();
     }
     run() {
+        this.database.autoLoadDatabases();
         this.loader.registerLoaders();
         this.dispathcer.registerCommands();
         this.events.registerEvents();
-        this.database.autoLoadDatabases();
     }
 
 }

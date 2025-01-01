@@ -25,11 +25,18 @@ module.exports = {
         },
         mySqlLite1: {
             type: 'sqlite',
-            filename: 'db.sqlite',
+            filename: 'db.sqlite1',
         },
         mySqlLite2: {
             type: 'sqlite',
-            filename: 'db.sqlite',
+            filename: 'db.sqlite2',
+            initialQuery: `
+            CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL
+            );
+            `,
         },
         myMySQL: {
             type: 'mysql',
