@@ -1,6 +1,5 @@
-const AddressObject = require("../valueObjects/Address");
 
-class UserEntity {
+class ProfileEntity {
     constructor(userId, firstName, lastName, email) {
         this.userId = userId; 
         this.firstName = firstName;
@@ -22,4 +21,4 @@ class UserEntity {
     }
 }
 
-module.exports = UserEntity;
+module.exports = ProfileEntity;

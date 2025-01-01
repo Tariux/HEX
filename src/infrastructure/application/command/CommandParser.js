@@ -51,7 +51,7 @@ class CommandParser {
             protocol: protocol.toUpperCase(),
             method: method.toUpperCase(),
             target: this.#validateRoute(url),
-            statusCode: statusCode || 400,
+            statusCode: statusCode || 200,
             inputData: inputData || body || {},
             queryParams: queryParams || {},
             meta,

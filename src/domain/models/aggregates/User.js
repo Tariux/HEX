@@ -1,24 +1,24 @@
-const UserEntity = require("../entities/User");
-const AddressObject = require("../valueObjects/Address");
+const ProfileEntity = require("../entities/Profile");
+const BirthdayObject = require("../valueObjects/BirthdayObject");
 
 class UserAggregate {
-    constructor(userId, firstName, lastName, email, street, city, zipCode) {
-        this.user = new UserEntity(userId, firstName, lastName, email);
-        this.address = new AddressObject(street, city, zipCode);
+    constructor(userId, firstName, lastName, email, yyyy, mm, dd) {
+        this.profile = new ProfileEntity(userId, firstName, lastName, email);
+        this.birthday = new BirthdayObject(yyyy, mm, dd);
     }
 
     updateEmail(newEmail) {
-        this.user.updateEmail(newEmail);
+        this.profile.updateEmail(newEmail);
     }
 
-    updateAddress(newStreet, newCity, newZipCode) {
-        this.address = new AddressObject(newStreet, newCity, newZipCode);
+    updateBirthday(yyyy, mm, dd) {
+        this.birthday = new BirthdayObject(yyyy, mm, dd);
     }
 
     getUserDetails() {
         return {
-            user: this.user,
-            address: this.address,
+            profile: this.profile,
+            birthday: this.birthday,
         };
     }
 }

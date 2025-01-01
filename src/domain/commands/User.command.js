@@ -1,11 +1,13 @@
 const Events = require("../../infrastructure/application/events/Events");
+const UserAggregate = require("../models/aggregates/User");
+const { v4: uuidv4 } = require('uuid');
 
 class UserCommand {
     static descriptor = {
         commandName: 'UserCommand',
         type: 'REQUEST',
         protocol: 'HTTP',
-        loader: ['domain.services.User' , 'domain.services.Order'],
+        loader: ['domain.services.User', 'domain.services.Order'],
         routes: [
             {
                 method: 'GET',
@@ -26,6 +28,13 @@ class UserCommand {
                 method: 'POST',
                 target: '/users',
                 handler: 'getUsers',
+                // loader: 'domain.anotherNamespace.AnotherService',
+                contentType: 'text/json',
+            },
+            {
+                method: 'POST',
+                target: '/user',
+                handler: 'createUser',
                 // loader: 'domain.anotherNamespace.AnotherService',
                 contentType: 'text/json',
             },
@@ -52,23 +61,24 @@ class UserCommand {
     }
 
     async getUsers() {
-        console.log('the command' , this.command);
-        
         return {
             status: 'success',
             message: 'Users retrieved successfully',
-            data: await this.userService.getUsers(),
+            data: await this.userService.getAll(),
         };
     }
 
     async createUser() {
+        const { firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
+        const uuid = uuidv4();
+        const user = new UserAggregate(uuid, firstName, lastName, email, yyyy, mm, dd);
         Events.publish('UserCreatedEvent', {
-            userId: '123',
-        } , (incoming) => {
+        }, (incoming) => {
         });
         return {
             status: 'success',
             message: 'User created successfully',
+            user: await this.userService.create(user),
         };
     }
 };

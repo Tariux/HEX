@@ -30,13 +30,23 @@ module.exports = {
         mySqlLite2: {
             type: 'sqlite',
             filename: 'db.sqlite2',
-            initialQuery: `
+            initialQuery: [`
             CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL
+            id TEXT PRIMARY KEY, -- UUID for the user
+            birthday_yyyy TEXT NOT NULL, -- Birthday year
+            birthday_mm TEXT NOT NULL, -- Birthday month
+            birthday_dd TEXT NOT NULL -- Birthday day
             );
             `,
+            `
+            CREATE TABLE IF NOT EXISTS profiles (
+            userId TEXT PRIMARY KEY, -- Links to the users table
+            firstName TEXT NOT NULL,
+            lastName TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+            );
+            `],
         },
         myMySQL: {
             type: 'mysql',
