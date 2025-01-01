@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = { 
+module.exports = {
     "commandsPath": [
         path.join(__dirname, "../../../domain/commands")
     ],
@@ -14,11 +14,31 @@ module.exports = {
         }
     ],
     "database": {
-        "host": "localhost",
-        "port": 3306,
-        "user": "root",
-        "password": "password",
-        "database": "my_database"
+        myMongoDB: {
+            type: 'mongodb',
+            connectionString: 'mongodb://localhost:27017/mydb',
+        },
+        myRedis: {
+            type: 'redis',
+            host: 'localhost',
+            port: 6379,
+        },
+        mySqlLite1: {
+            type: 'sqlite',
+            filename: 'db.sqlite',
+        },
+        mySqlLite2: {
+            type: 'sqlite',
+            filename: 'db.sqlite',
+        },
+        myMySQL: {
+            type: 'mysql',
+            host: 'localhost',
+            user: 'root',
+            password: '',
+            database: 'mydb',
+        },
+
     },
     "event": {
         "emitter": "eventemitter2"
