@@ -10,19 +10,18 @@ class UserRepository {
     const { yyyy, mm, dd } = birthday;
 
     try {
-      // Insert into users table
       await this.db.query(
         'INSERT INTO users (id, birthday_yyyy, birthday_mm, birthday_dd) VALUES (?, ?, ?, ?)',
         [userId, yyyy, mm, dd]
       );
 
-      // Insert into profiles table
       await this.db.query(
         'INSERT INTO profiles (userId, firstName, lastName, email) VALUES (?, ?, ?, ?)',
         [userId, firstName, lastName, email]
       );
 
       console.log('User created successfully');
+      return userId;
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
@@ -40,6 +39,7 @@ class UserRepository {
           users.birthday_dd,
           profiles.firstName,
           profiles.lastName,
+          profiles.email
         FROM users
         JOIN profiles ON users.id = profiles.userId
         WHERE users.id = ?`,

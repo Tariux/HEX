@@ -32,18 +32,18 @@ module.exports = {
             filename: 'db.sqlite2',
             initialQuery: [`
             CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY, -- UUID for the user
-            birthday_yyyy TEXT NOT NULL, -- Birthday year
-            birthday_mm TEXT NOT NULL, -- Birthday month
-            birthday_dd TEXT NOT NULL -- Birthday day
+            id TEXT PRIMARY KEY,
+            birthday_yyyy TEXT NOT NULL,
+            birthday_mm TEXT NOT NULL,
+            birthday_dd TEXT NOT NULL
             );
             `,
             `
             CREATE TABLE IF NOT EXISTS profiles (
-            userId TEXT PRIMARY KEY, -- Links to the users table
+            userId TEXT PRIMARY KEY,
             firstName TEXT NOT NULL,
             lastName TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL,
             FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
             );
             `],

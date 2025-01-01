@@ -4,7 +4,8 @@
   "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
   "main": "main.js",
   "scripts": {
-    "test": "node debug.js"
+    "debug": "node debug.js",
+    "test": "mocha test/**"
   },
   "license": "MIT",
   "dependencies": {

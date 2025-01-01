@@ -8,56 +8,67 @@ class UserCommand {
         type: 'REQUEST',
         protocol: 'HTTP',
         loader: ['domain.services.User', 'domain.services.Order'],
+        contentType: 'text/json',
         routes: [
             {
+                method: 'DELETE',
+                target: '/user',
+                handler: 'deleteUser',
+                // loader: 'domain.anotherNamespace.AnotherService',
+            },
+            {
+                method: 'POST',
+                target: '/user',
+                handler: 'createUser',
+            },
+            {
+                method: 'PUT',
+                target: '/user',
+                handler: 'updateUser',
+            },
+            {
+                method: 'GET',
+                target: '/user',
+                handler: 'getUser',
+            },
+            {
+                method: 'GET',
+                target: '/user',
+                handler: 'getUser',
+                protocol: 'HTTPS',
+            },
+            {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',
-                // loader: 'domain.anotherNamespace.AnotherService',
-                contentType: 'text/json',
             },
             {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',
                 protocol: 'HTTPS',
-                // loader: 'domain.anotherNamespace.AnotherService',
-                contentType: 'text/json',
-            },
-            {
-                method: 'POST',
-                target: '/users',
-                handler: 'getUsers',
-                // loader: 'domain.anotherNamespace.AnotherService',
-                contentType: 'text/json',
-            },
-            {
-                method: 'POST',
-                target: '/user',
-                handler: 'createUser',
-                // loader: 'domain.anotherNamespace.AnotherService',
-                contentType: 'text/json',
-            },
-            {
-                method: 'POST',
-                target: '/users',
-                handler: 'getUsers',
-                protocol: 'HTTPS',
-                // loader: 'domain.anotherNamespace.AnotherService',
-                contentType: 'text/json',
-            },
-            {
-                method: 'GET',
-                target: '/user',
-                // loader: ['domain.services.UserMock' , 'domain.services.OrderMock'],
-                handler: 'createUser',
-                contentType: 'text/json',
-            },
+            }
         ],
     };
     constructor(services) {
         this.userService = services.get('User');
-        this.orderService = services.get('Order');
+    }
+
+    async getUser() {
+        const {uid} = this.command.queryParams;
+        const user = await this.userService.get(uid);
+        if (user) {
+            return {
+                status: 'success',
+                message: 'User retrieved',
+                data: user,
+            };
+        }
+        return {
+            status: 'fail',
+            message: 'User not found',
+        };
+
     }
 
     async getUsers() {
@@ -72,13 +83,31 @@ class UserCommand {
         const { firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
         const uuid = uuidv4();
         const user = new UserAggregate(uuid, firstName, lastName, email, yyyy, mm, dd);
-        Events.publish('UserCreatedEvent', {
-        }, (incoming) => {
+        Events.publish('UserCreatedEvent', user, (incoming) => {
         });
         return {
             status: 'success',
             message: 'User created successfully',
             user: await this.userService.create(user),
+        };
+    }
+
+    async updateUser() {
+        const {userID, firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
+        const user = new UserAggregate(userID, firstName, lastName, email, yyyy, mm, dd);
+        return {
+            status: 'success',
+            message: 'User updated successfully',
+            user: await this.userService.update(user),
+        };
+    }
+
+    async deleteUser() {
+        const {userID} = this.command.inputData;
+        return {
+            status: 'success',
+            message: 'User deleted successfully',
+            user: await this.userService.delete(userID),
         };
     }
 };

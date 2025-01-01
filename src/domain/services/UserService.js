@@ -16,6 +16,18 @@ class UserService {
     return this.userRepository.create(user);
   }
 
+  async delete(userID) {
+    return this.userRepository.delete(userID);
+  }
+
+  async update(user) {
+    return this.userRepository.update(user);
+  }
+
+  async get(userID) {
+    return this.userRepository.findById(userID);
+  } 
+
   async getAll() {
     return this.userRepository.getAll();
   }
