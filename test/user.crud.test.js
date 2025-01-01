@@ -1,7 +1,7 @@
 const hex = require("../main");
 const axios = require("axios");
 const { expect } = require("chai");
-
+const cl = console;
 console = {
     log: () => {
 
@@ -31,7 +31,8 @@ describe("User API Test Scenario (CRUD)", function () {
         const response = await axios.post('http://localhost:80/user', createUserData);
         expect(response.status).to.equal(200);
         expect(response.data.status).to.equal('success');
-        userId = response.data.user; // Store userId for later tests
+        userId = response.data.user;
+        cl.log('  userId:', userId); // 
     });
 
     it("should update the user", async function () {
