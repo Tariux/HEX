@@ -1,12 +1,11 @@
 {
   "name": "hex",
   "version": "1.0.0",
-  "description": "api service",
+  "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
   "main": "main.js",
   "scripts": {
-    "test": "node run main.js"
+    "test": "node debug.js"
   },
-  "author": "opiumdev <opiumdev@proton.me>",
   "license": "MIT",
   "dependencies": {
     "amqplib": "^0.10.5",

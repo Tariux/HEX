@@ -6,14 +6,14 @@ class DatabaseInterface {
 
   async getConnection(key) {
     if (this.connections[key]) {
-      console.log(`Using cached connection for ${key}`);
+      tools.logger.info(`using cached connection for ${key}`);
       return this.connections[key];
     }
 
     const db = this.dbManager.getDatabase(key);
     await db.connect();
     this.connections[key] = db;
-    console.log(`Created and cached connection for ${key}`);
+    tools.logger.info(`created and cached connection for ${key}`);
     return db;
   }
 
@@ -21,9 +21,9 @@ class DatabaseInterface {
     if (this.connections[key]) {
       await this.connections[key].disconnect();
       delete this.connections[key];
-      console.log(`Closed connection for ${key}`);
+      tools.logger.info(`closed connection for ${key}`);
     } else {
-      console.log(`No active connection found for ${key}`);
+      tools.logger.info(`no active connection found for ${key}`);
     }
   }
 
@@ -31,7 +31,7 @@ class DatabaseInterface {
     for (const key of Object.keys(this.connections)) {
       await this.closeConnection(key);
     }
-    console.log('All connections closed');
+    tools.logger.info('all connections closed');
   }
 
   async query(key, ...args) {
