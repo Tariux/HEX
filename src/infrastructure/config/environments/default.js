@@ -64,26 +64,32 @@ module.exports = {
         {
             "name": "ServerNumberOne",
             "host": "localhost",
-            "port": 8081,
+            "port": 442,
             "type": "http",
             "ssl": true,
         },
         {
             "name": "ServerNumberTwo",
             "host": "localhost",
-            "port": 8080,
+            "port": 80,
+            "type": "http",
+        },
+        {
+            "name": "ServerNumberThree",
+            "host": "localhost",
+            "port": 1000,
             "type": "http",
         },
         {
             "name": "ServerHTTP3",
             "host": "localhost",
-            "port": 9090,
+            "port": 90,
             "type": "quic",
         },
         {
             "name": "ServerRPC",
             "host": "localhost",
-            "port": 50051,
+            "port": 100,
             "type": "rpc",
         },
     ]
