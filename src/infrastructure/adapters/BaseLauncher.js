@@ -16,8 +16,9 @@ class BaseLauncher {
         this.servers.forEach((instance, key) => {
             try {
                 instance.listen().then(() => {
-                    tools.logger.info(`${key} server is running: http${instance.ssl ? 's' : ''}://${instance.host || 'Uknown'}:${instance.port || 'NaN'}`);
+                    tools.logger.info(`${key} server is running: http${instance?.ssl ? 's' : ''}://${instance?.host || 'Uknown'}:${instance?.port || 'NaN'}`);
                     instance.updateStatus(true);
+
                 });
             } catch (error) {
                 tools.logger.error(`${key} server failed`);

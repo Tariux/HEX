@@ -5,10 +5,20 @@ class BaseServer {
     status = false;
 
     constructor(config) {
+        if (!this.#validateServerConfig(config)) {
+            return;
+        }
         this.port = config.port;
         this.host = config.host;
         this.ssl = config.ssl;
         this.emitter = EventManager.getInstance().emitter;
+    }
+
+    #validateServerConfig(server) {
+        return (
+            server && server?.host && server?.port && server?.type && server?.name &&
+            typeof server?.port === 'number'
+        )
     }
 
     handleIncomingRequest(request) {

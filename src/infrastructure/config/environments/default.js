@@ -60,12 +60,31 @@ module.exports = {
     "event": {
         "emitter": "eventemitter2"
     },
-    "rpc": {
-        "host": "localhost",
-        "port": 50051
-    },
-    "http": {
-        "host": "localhost",
-        "port": 3000
-    }
+    "servers" : [
+        {
+            "name": "ServerNumberOne",
+            "host": "localhost",
+            "port": 8081,
+            "type": "http",
+            "ssl": true,
+        },
+        {
+            "name": "ServerNumberTwo",
+            "host": "localhost",
+            "port": 8080,
+            "type": "http",
+        },
+        {
+            "name": "ServerHTTP3",
+            "host": "localhost",
+            "port": 9090,
+            "type": "quic",
+        },
+        {
+            "name": "ServerRPC",
+            "host": "localhost",
+            "port": 50051,
+            "type": "rpc",
+        },
+    ]
 }

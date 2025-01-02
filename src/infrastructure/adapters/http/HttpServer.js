@@ -16,8 +16,8 @@ class HttpServer extends BaseServer {
     
     listen() {
         try {
+            
             this.app = http.createServer((req, res) => {
-
                 const queryParams = this.#parseQueryParams(req.url);
 
                 let body = '';

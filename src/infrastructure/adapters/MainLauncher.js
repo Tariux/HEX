@@ -1,13 +1,23 @@
 const HttpLauncher = require('../adapters/http/HttpLauncher');
 const RpcLauncher = require('../adapters/rpc/RpcLauncher');
+const ConfigCenter = require('../config/ConfigCenter');
 const { tools } = require('../utils/ToolManager');
 
 class MainLauncher {
+    launchers = []
     constructor() {
-        this.launchers = [
-            new HttpLauncher(),
-            new RpcLauncher(),
-        ];
+        this.config = ConfigCenter.getInstance().get('servers');
+        this.servers = tools.helper.groupBy(Object.values(this.config), 'type');
+        
+        if (this.servers.http) {
+          this.launchers.push(new HttpLauncher(this.servers.http))  
+        } 
+        if (this.servers.rpc) {
+            this.launchers.push(new RpcLauncher(this.servers.rpc))  
+        }
+        if (this.servers.quic) {
+            // this.launchers.push(new QuicLauncher(this.servers.quic))  
+        }
     }
 
     start() {

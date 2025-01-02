@@ -1,18 +1,24 @@
 const BaseLauncher = require('../BaseLauncher');
 const HttpServer = require('./HttpServer');
-const ConfigCenter = require('../../config/ConfigCenter');
 const Http2Server = require('./Http2Server');
 
 class HttpLauncher extends BaseLauncher {
-    #config = null;
     servers = new Map();
-    constructor() {
+    constructor(servers) {
         super('HttpLauncher');
-        this.#config = ConfigCenter.getInstance().get('http');
-        this.ssl = this.#config.ssl || false;
-        this.servers.set('http' , new HttpServer(this.#config))
-        if (this.ssl) this.servers.set('https' , new Http2Server(this.#config));
+        servers.forEach(server => {
+                this.#launchServer(server);
+        });
     }
+
+    #launchServer(server) {
+        if (server.ssl && server.ssl === true) {
+            this.servers.set(`${server.type}:${server.name}`, new Http2Server(server));
+        } else {
+            this.servers.set(`${server.type}:${server.name}`, new HttpServer(server));
+        }
+    }
+
 
 }
 
