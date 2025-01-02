@@ -1,13 +1,19 @@
 {
-  "name": "hex",
-  "version": "1.1.0",
+  "name": "hex-micro",
+  "version": "1.1.1",
   "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
   "main": "index.js",
-  "author": "Tariux",
+  "author": "opium66",
   "scripts": {
     "debug": "node ./example/debug.js",
     "test": "mocha test/**"
   },
+  "exports": {
+    ".": {
+      "require": "./index.js"
+    }
+  },
+  "keywords": ["domain-driven-design" , "microservice", "hexagon" , "backend", "hex-micro"],
   "license": "MIT",
   "dependencies": {
     "amqplib": "^0.10.5",
