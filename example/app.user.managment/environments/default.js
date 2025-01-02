@@ -4,20 +4,23 @@ module.exports = {
     "event": {
         "emitter": "eventemitter2"
     },
+    "packages": [
+        'http'
+    ],
     "commandsPath": [
-        path.join(__dirname, "../../../domain/commands")
+        path.join(__dirname, "../commands")
     ],
     "eventsPath": [
-        path.join(__dirname, "../../../domain/events")
+        path.join(__dirname, "../events")
     ],
     "servicesPath": [
         {
-            path: path.join(__dirname, "../../../domain/services"),
+            path: path.join(__dirname, "../services"),
             namespace: "domain.services"
         }
     ],
     "middlewaresPath": [
-        path.join(__dirname, "../../../domain/middlewares")
+        path.join(__dirname, "../middlewares")
     ],
     "database": {
         myMongoDB: {

@@ -1,4 +1,4 @@
-const Database = require("../../infrastructure/application/database/Database");
+const { _DB } = require("../../..");
 const UserRepository = require("../repositories/UserRepository");
 
 class UserService {
@@ -8,7 +8,7 @@ class UserService {
   }
 
   async #init() {    
-    this.db = await Database.adapter.getConnection('mySqlLite2');
+    this.db = await _DB.adapter.getConnection('mySqlLite2');
     this.userRepository = new UserRepository(this.db);
   }
 

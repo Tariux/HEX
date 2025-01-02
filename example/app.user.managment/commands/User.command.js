@@ -1,8 +1,9 @@
-const Events = require("../../infrastructure/application/events/Events");
+const { _EVENT } = require("../../..");
 const UserAggregate = require("../models/aggregates/User");
 const { v4: uuidv4 } = require('uuid');
 
 class UserCommand {
+    
     static descriptor = {
         commandName: 'UserCommand',
         type: 'REQUEST',
@@ -84,7 +85,7 @@ class UserCommand {
         const { firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
         const uuid = uuidv4();
         const user = new UserAggregate(uuid, firstName, lastName, email, yyyy, mm, dd);
-        Events.publish('UserCreatedEvent', user, (incoming) => {
+        _EVENT.publish('UserCreatedEvent', user, (incoming) => {
         });
         return {
             status: 'success',

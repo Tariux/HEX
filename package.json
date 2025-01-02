@@ -1,10 +1,11 @@
 {
   "name": "hex",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
-  "main": "main.js",
+  "main": "index.js",
+  "author": "Tariux",
   "scripts": {
-    "debug": "node debug.js",
+    "debug": "node ./example/debug.js",
     "test": "mocha test/**"
   },
   "license": "MIT",

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const quic = require('@nodejs/quic'); const url = require('url');
 const ConfigCenter = require('../../config/ConfigCenter');
-const generateCertificates = require('../../../../shared/utils/generateCertificates');
+const generateCertificates = require('../../../shared/utils/generateCertificates');
 const BaseServer = require('../BaseServer');
 const { tools } = require('../../utils/ToolManager');
 

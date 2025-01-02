@@ -4,6 +4,9 @@ module.exports = {
     "event": {
         "emitter": "eventemitter2"
     },
+    "packages": [
+        'http'
+    ],
     "commandsPath": [
         path.join(__dirname, "../../../domain/commands")
     ],

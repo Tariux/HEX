@@ -55,7 +55,8 @@ class Logger {
 
     error(message, meta = {}) {
         if (message instanceof Error) {
-            this.log('error', `${message.name}: ${message.message}`, { stack: message.stack, ...meta });
+            this.log(message);
+            this.log(meta);
         } else {
             this.log('error', message, meta);
         }

@@ -1,7 +1,7 @@
-const MainLauncher = require("./src/infrastructure/adapters/MainLauncher");
-const Application = require("./src/infrastructure/application/Application");
-const ConfigCenter = require("./src/infrastructure/config/ConfigCenter");
-const { tools } = require("./src/infrastructure/utils/ToolManager");
+const MainLauncher = require("./adapters/MainLauncher");
+const Application = require("./application/Application");
+const ConfigCenter = require("./config/ConfigCenter");
+const { tools } = require("./utils/ToolManager");
 
 class hex {
     static instance = null

@@ -2,7 +2,7 @@ const http2 = require('http2');
 const fs = require('fs');
 const url = require('url');
 const ConfigCenter = require('../../config/ConfigCenter');
-const generateCertificates = require('../../../../shared/utils/generateCertificates');
+const generateCertificates = require('../../../shared/utils/generateCertificates');
 const BaseServer = require('../BaseServer');
 const { tools } = require('../../utils/ToolManager');
 
