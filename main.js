@@ -5,8 +5,8 @@ const { tools } = require("./src/infrastructure/utils/ToolManager");
 
 class hex {
     static instance = null
-    constructor() {
-        this.config = ConfigCenter.getInstance().init();
+    constructor(environmentPath = false) {
+        this.config = ConfigCenter.getInstance(environmentPath).init();
         this.launcher = new MainLauncher();
         this.application = new Application();
     }

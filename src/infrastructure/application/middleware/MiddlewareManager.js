@@ -51,7 +51,7 @@ class MiddlewareManager {
             }
             handlerInstance.options = MiddlewareClass.options;
             MiddlewareManager.middlewares.set(MiddlewareClass.options.middlewareName, handlerInstance);
-            tools.logger.info(`middleware ${MiddlewareClass.options.middlewareName} loaded` , filePath);
+            tools.logger.info(`middleware ${MiddlewareClass.options.middlewareName} loaded`);
 
         } catch (error) {
             tools.logger.error(`failed to register middleware from` , filePath);

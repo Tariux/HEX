@@ -7,7 +7,8 @@ class ConfigCenter {
     #config;
     #initialized = false;
 
-    constructor() {
+    constructor(environmentPath) {
+        this.environmentPath = environmentPath;
         if (ConfigCenter.#instance) {
             throw new Error('ConfigCenter is a singleton. Use getInstance() to access it.');
         }
@@ -35,7 +36,7 @@ class ConfigCenter {
             }
         };
 
-        tools.logger.info('configs are loaded', environment);
+        tools.logger.info(`configs are loaded ${this.environmentPath ? 'custom' : 'default'}`, environment);
 
         this.#config = Object.freeze(finalConfig);
         this.#initialized = true;
@@ -59,7 +60,17 @@ class ConfigCenter {
      */
     #loadConfigFile(name) {
         try {
-            return require(`./environments/${name}.js`);
+            if (this.environmentPath && typeof this.environmentPath === 'string') {
+                try {
+                    tools.logger.info('found custom environment config path', this.environmentPath);
+                    return require(path.join(this.environmentPath, `${name}.js`));
+                } catch (error) {
+                    tools.logger.error('cannot find custom environment config path', this.environmentPath);
+                    return require(`./environments/${name}.js`);
+                }
+            } else {
+                return require(`./environments/${name}.js`);
+            }
         } catch (error) {
             tools.logger.warn(`Configuration file ${name}.js not found. Returning empty object.`);
             return {};
@@ -70,9 +81,9 @@ class ConfigCenter {
      * Retrieves the singleton instance of ConfigCenter.
      * @returns {ConfigCenter} The singleton instance.
      */
-    static getInstance() {
+    static getInstance(environmentPath) {
         if (!ConfigCenter.#instance) {
-            ConfigCenter.#instance = new ConfigCenter();
+            ConfigCenter.#instance = new ConfigCenter(environmentPath);
         }
         return ConfigCenter.#instance;
     }

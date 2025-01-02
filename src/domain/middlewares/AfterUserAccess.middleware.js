@@ -6,7 +6,6 @@ class AfterUserAccess {
 
     handle(command, next, before) {
         console.log('MIDDLE WARE 3 after');
-        next(before + "AfterUserAccess")
 
     }
 };

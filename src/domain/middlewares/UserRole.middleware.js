@@ -11,7 +11,6 @@ class UserMiddleware {
 
     handle(command, next) {
         console.log('MIDDLE WARE 2' );
-
         next()
     }
 };

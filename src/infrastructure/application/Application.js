@@ -1,3 +1,4 @@
+const ConfigCenter = require("../config/ConfigCenter");
 const CommandDispatcher = require("./command/CommandDispatcher");
 const Database = require("./database/Database");
 const EventManager = require("./events/EventManager");
