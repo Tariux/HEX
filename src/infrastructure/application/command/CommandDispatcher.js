@@ -57,9 +57,9 @@ class CommandDispatcher {
         tools.logger.info(`registered handler for pattern: ${requestPattern}`);
     }
 
-    #runMiddlewares(middlewares, command) {
+    #runMiddlewares(middlewares, command , payload = {}) {
+        middlewares = middlewares.reverse();
         let index = 0;
-    
         const next = (state = true) => {
             if (state instanceof Error) {
                 console.log('NEXT CALLED WITH ERROR', state);
@@ -74,28 +74,28 @@ class CommandDispatcher {
             index++;
             runMiddleware();
         };
-    
+
         const runMiddleware = () => {
             if (index >= middlewares.length) {
                 return;
             }
-    
+
             const middleware = middlewares[index];
             let callableMiddleware;
-    
+
             if (typeof middleware === 'object') {
                 callableMiddleware = middleware.handle;
             } else if (typeof middleware === 'function') {
                 callableMiddleware = middleware;
             }
-    
+
             try {
-                callableMiddleware(command, next);
+                callableMiddleware(command, next, payload);
             } catch (error) {
                 throw new Error(`error while running ${middleware.options.middlewareName} middleware, error: ${error.message || error.toString}`);;
             }
         };
-    
+
         runMiddleware();
     }
 
@@ -169,12 +169,11 @@ class CommandDispatcher {
 
             try {
                 if (afterMiddlewares) {
-                    this.#runMiddlewares(afterMiddlewares, command);
+                    this.#runMiddlewares(afterMiddlewares, command, result);
                 }
             } catch (error) {
                 console.log('error whille running after middlewares');
             }
-
 
             return result;
         };
