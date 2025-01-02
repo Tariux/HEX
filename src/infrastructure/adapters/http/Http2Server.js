@@ -49,8 +49,7 @@ class Http2Server extends BaseServer {
                 });
 
                 req.on('end', () => {
-                    // Parse incoming JSON body if content type is application/json
-                    let inputData = null;
+                                        let inputData = null;
                     if (req.headers['content-type'] === 'application/json') {
                         try {
                             inputData = JSON.parse(body);

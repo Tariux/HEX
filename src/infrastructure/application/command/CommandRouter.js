@@ -54,7 +54,6 @@ class CommandRouter {
                 );
 
                 const routes = handlerInstance.descriptor.routes;
-                delete handlerInstance.descriptor.routes;
 
                 routes.forEach((route) => {
                     const descriptor = { ...handlerInstance.descriptor, ...route };

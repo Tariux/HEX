@@ -1,6 +1,9 @@
 const path = require('path');
 
 module.exports = {
+    "event": {
+        "emitter": "eventemitter2"
+    },
     "commandsPath": [
         path.join(__dirname, "../../../domain/commands")
     ],
@@ -12,6 +15,9 @@ module.exports = {
             path: path.join(__dirname, "../../../domain/services"),
             namespace: "domain.services"
         }
+    ],
+    "middlewaresPath": [
+        path.join(__dirname, "../../../domain/middlewares")
     ],
     "database": {
         myMongoDB: {
@@ -56,9 +62,6 @@ module.exports = {
             database: 'mydb',
         },
 
-    },
-    "event": {
-        "emitter": "eventemitter2"
     },
     "servers" : [
         {

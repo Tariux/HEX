@@ -31,10 +31,8 @@ class CommandParser {
     }
 
     #validateRoute(route) {
-        const regex = /^\/([^?]*)/; // Matches everything starting with / and excluding anything after ? (query params)
-        const match = route.match(regex);
-        return match ? `/${match[1]}`.toUpperCase() : null;  // Convert the result to uppercase
-    }
+        const regex = /^\/([^?]*)/;         const match = route.match(regex);
+        return match ? `/${match[1]}`.toUpperCase() : null;      }
 
     #httpRequestToCommand(httpRequest, protocol, inputData = false , queryParams = false) {
         const { method, url, body, query, httpVersion, headers, statusCode } = httpRequest;

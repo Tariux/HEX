@@ -3,7 +3,6 @@ class UserRepository {
     this.db = db;
   }
 
-  // Create a new user
   async create(userAggregate) {
     const { profile, birthday } = userAggregate;
     const { userId, firstName, lastName, email } = profile;
@@ -28,7 +27,6 @@ class UserRepository {
     }
   }
 
-  // Fetch a user by ID
   async findById(userId) {
     try {
       const [user] = await this.db.query(
@@ -67,7 +65,6 @@ class UserRepository {
     }
   }
 
-  // Fetch all users
   async getAll() {
     try {
       const users = await this.db.query(
@@ -95,21 +92,18 @@ class UserRepository {
     }
   }
 
-  // Update a user
   async update(userAggregate) {
     const { profile, birthday } = userAggregate;
     const { userId, firstName, lastName, email } = profile;
     const { yyyy, mm, dd } = birthday;
 
     try {
-      // Update users table
-      await this.db.query(
+            await this.db.query(
         'UPDATE users SET birthday_yyyy = ?, birthday_mm = ?, birthday_dd = ? WHERE id = ?',
         [yyyy, mm, dd, userId]
       );
 
-      // Update profiles table
-      await this.db.query(
+            await this.db.query(
         'UPDATE profiles SET firstName = ?, lastName = ?, email = ? WHERE userId = ?',
         [firstName, lastName, email, userId]
       );
@@ -121,8 +115,7 @@ class UserRepository {
     }
   }
 
-  // Delete a user
-  async delete(userId) {
+    async delete(userId) {
     try {
       await this.db.query('DELETE FROM users WHERE id = ?', [userId]);
       console.log('User deleted successfully');

@@ -1,6 +1,5 @@
 const fs = require('fs');
-const quic = require('@nodejs/quic'); // Use a compatible QUIC library
-const url = require('url');
+const quic = require('@nodejs/quic'); const url = require('url');
 const ConfigCenter = require('../../config/ConfigCenter');
 const generateCertificates = require('../../../../shared/utils/generateCertificates');
 const BaseServer = require('../BaseServer');
@@ -27,8 +26,7 @@ class Http3Server extends BaseServer {
         return {
             key: fs.readFileSync(this.credentials.keyPath),
             cert: fs.readFileSync(this.credentials.certPath),
-            allowHTTP1: true, // Enable fallback to HTTP/1.1
-        };
+            allowHTTP1: true,         };
     }
 
     #parseQueryParams(target) {
@@ -53,8 +51,7 @@ class Http3Server extends BaseServer {
                     });
 
                     stream.on('end', () => {
-                        // Parse incoming JSON body if content type is application/json
-                        let inputData = null;
+                                                let inputData = null;
                         if (headers['content-type'] === 'application/json') {
                             try {
                                 inputData = JSON.parse(body);

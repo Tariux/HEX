@@ -1,5 +1,7 @@
 const { tools } = require('../../utils/ToolManager');
 const EventManager = require('../events/EventManager');
+const { load } = require('../loader/Loader');
+const MiddlewareManager = require('../middleware/MiddlewareManager');
 const Command = require('./Command');
 const CommandRouter = require('./CommandRouter');
 
@@ -24,7 +26,7 @@ class CommandDispatcher {
             if (this.handlers.has(pattern)) {
                 throw new Error(`Handler for command pattern '${pattern}' is already registered.`);
             }
-            this.handlers.set(pattern, { handler, method: route.handler });
+            this.handlers.set(pattern, { handler, method: route.handler, middlewares: route.middlewares });
         });
     }
 
@@ -55,6 +57,65 @@ class CommandDispatcher {
         tools.logger.info(`registered handler for pattern: ${requestPattern}`);
     }
 
+    #runMiddlewares(middlewares, command) {
+        let index = 0;
+    
+        const next = (state = true) => {
+            if (state instanceof Error) {
+                console.log('NEXT CALLED WITH ERROR', state);
+                throw error;
+            }
+            if (state === false) {
+                throw new Error('Middleware chain stopped');
+            }
+            if (state !== true) {
+                throw new Error(state);
+            }
+            index++;
+            runMiddleware();
+        };
+    
+        const runMiddleware = () => {
+            if (index >= middlewares.length) {
+                return;
+            }
+    
+            const middleware = middlewares[index];
+            let callableMiddleware;
+    
+            if (typeof middleware === 'object') {
+                callableMiddleware = middleware.handle;
+            } else if (typeof middleware === 'function') {
+                callableMiddleware = middleware;
+            }
+    
+            try {
+                callableMiddleware(command, next);
+            } catch (error) {
+                throw new Error(`error while running ${middleware.options.middlewareName} middleware, error: ${error.message || error.toString}`);;
+            }
+        };
+    
+        runMiddleware();
+    }
+
+
+    #loadMiddlewares(middlewares) {
+        const loadedMiddlewares = [];
+        if (typeof middlewares === 'string') {
+            const middleware = MiddlewareManager.getMiddleware(middlewares);
+            loadedMiddlewares.push(middleware);
+        } else if (typeof middlewares === 'function') {
+            loadedMiddlewares.push(middlewares);
+        } else if (typeof middlewares === 'object') {
+            middlewares.forEach(middleware => {
+                loadedMiddlewares.push(...this.#loadMiddlewares(middleware));
+            });
+        }
+        return loadedMiddlewares;
+    }
+
+
     /**
      * Dispatches a command to its appropriate handler.
      * @param {string} pattern - The command pattern to dispatch.
@@ -62,16 +123,64 @@ class CommandDispatcher {
      * @returns {Promise} - The result of the command execution.
      */
     async dispatchCommand(pattern, payload = {}, command = false) {
-        const { handler, method } = this.handlers.get(pattern) || {};
+        const { handler, method, middlewares } = this.handlers.get(pattern) || {};
         if (!handler || typeof handler[method] !== 'function') {
             throw new Error(`handler or method '${method}' not found for pattern: '${pattern}'.`);
         }
+
         if (command) {
             handler.command = command.data;
         }
-        return handler[method](payload);
-    }
 
+        let handlerMiddlewares;
+        let beforeMiddlewares = [];
+        let afterMiddlewares = [];
+        if (!middlewares) {
+            return handler[method](payload);
+        } else {
+            handlerMiddlewares = this.#loadMiddlewares(middlewares);
+            handlerMiddlewares.forEach(middleware => {
+                if (middleware?.options?.type && middleware?.options?.type === 'after') {
+                    afterMiddlewares.push(middleware);
+                } else {
+                    beforeMiddlewares.push(middleware);
+                }
+            });
+        }
+
+
+        const handlerProxy = async () => {
+            let result;
+            let beforeMiddlewaresStatus = false;
+            try {
+                if (beforeMiddlewares) {
+                    this.#runMiddlewares(beforeMiddlewares, command);
+                    beforeMiddlewaresStatus = true;
+                }
+            } catch (error) {
+                tools.logger.error(error);
+            }
+
+            if (beforeMiddlewaresStatus) {
+                result = await handler[method](payload);
+            } else {
+                result = 'error while running middlewares';
+            }
+
+            try {
+                if (afterMiddlewares) {
+                    this.#runMiddlewares(afterMiddlewares, command);
+                }
+            } catch (error) {
+                console.log('error whille running after middlewares');
+            }
+
+
+            return result;
+        };
+
+        return handlerProxy();
+    }
     /**
      * Automatically registers commands via the CommandRouter.
      */

@@ -22,8 +22,7 @@ class HttpServer extends BaseServer {
 
                 let body = '';
 
-                // Collect incoming data chunks
-                req.on('data', (chunk) => {
+                                req.on('data', (chunk) => {
                     body += chunk.toString();
                 });
 
@@ -39,8 +38,7 @@ class HttpServer extends BaseServer {
                         }
                     }
 
-                    // Handle the incoming request
-                    this.handleIncomingRequest({ type: 'HTTP', data: req, inputData, queryParams }).then(command => {
+                                        this.handleIncomingRequest({ type: 'HTTP', data: req, inputData, queryParams }).then(command => {
                         const contentType = command?.dispatcher?.contentType || 'text/plain';
                         res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });
                         switch (contentType) {
