@@ -34,11 +34,11 @@ module.exports = {
         },
         mySqlLite1: {
             type: 'sqlite',
-            filename: 'db.sqlite1',
+            filename: './storage/db.sqlite1',
         },
         mySqlLite2: {
             type: 'sqlite',
-            filename: 'db.sqlite2',
+            filename: './storage/db.sqlite2',
             initialQuery: [`
             CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,

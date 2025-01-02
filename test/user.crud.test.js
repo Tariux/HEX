@@ -1,6 +1,8 @@
-const hex = require("../main");
 const axios = require("axios");
 const { expect } = require("chai");
+const { _HEX } = require("..");
+const path = require('path');
+
 const cl = console;
 console = {
     log: () => {
@@ -11,7 +13,7 @@ describe("User API Test Scenario (CRUD)", function () {
     let userId;
 
     before(async function () {
-        this.Hex = new hex();
+        this.Hex = new _HEX(path.join(__dirname, '../example/app.user.managment/environments'));
         await this.Hex.launch();
     });
 

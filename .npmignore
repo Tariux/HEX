@@ -1,0 +1,8 @@
+.gitignore
+.npmignore
+node_modules/
+credentials/
+dist/
+package-lock.json
+.env
+storage/
