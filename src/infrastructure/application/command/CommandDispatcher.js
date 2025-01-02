@@ -57,7 +57,7 @@ class CommandDispatcher {
         tools.logger.info(`registered handler for pattern: ${requestPattern}`);
     }
 
-    #runMiddlewares(middlewares, command , payload = {}) {
+    #runMiddlewares(middlewares, command, payload = {}) {
         middlewares = middlewares.reverse();
         let index = 0;
         const next = (state = true) => {
@@ -151,6 +151,7 @@ class CommandDispatcher {
 
         const handlerProxy = async () => {
             let result;
+            let afterResult
             let beforeMiddlewaresStatus = false;
             try {
                 if (beforeMiddlewares) {
@@ -166,16 +167,38 @@ class CommandDispatcher {
             } else {
                 result = 'error while running middlewares';
             }
+            afterResult = result;
 
             try {
                 if (afterMiddlewares) {
-                    this.#runMiddlewares(afterMiddlewares, command, result);
+                    let index = 0;
+                    const next = function (newResult = false) {
+                        afterResult = newResult;
+                        index++;
+                    }
+                    while (index < afterMiddlewares.length) {
+                        const middleware = afterMiddlewares[index];
+                        try {
+                            let oldIndex = index;
+                            middleware.handle(command, next, afterResult);
+                            if (oldIndex === index) {
+                                console.log('NEXT NOT CALLED');
+                                index++;
+                            }
+                        } catch (error) {
+                            console.log('Error while running after middleware', error);
+                        }
+                    }
                 }
             } catch (error) {
                 console.log('error whille running after middlewares');
             }
 
-            return result;
+            if (afterMiddlewares) {
+                return afterResult;
+            } else {
+                return result;
+            }
         };
 
         return handlerProxy();

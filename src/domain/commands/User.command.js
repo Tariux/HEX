@@ -41,7 +41,7 @@ class UserCommand {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',
-                middlewares: ['UserMiddleware' , 'UserAccess']
+                middlewares: ['UserMiddleware' , 'UserAccess', 'AfterUserAccess', 'AfterUserAccessAA']
             },
             {
                 method: 'GET',
