@@ -8,6 +8,10 @@
     "debug": "node ./example/debug.js",
     "test": "mocha test/**"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tariux/HEX.git"
+  },
   "exports": {
     ".": {
       "require": "./index.js"
