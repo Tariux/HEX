@@ -103,6 +103,19 @@ Hex-Micro uses a structured directory layout for clean separation of concerns:
 - Events: Event-driven logic.
 
 ## Development 
+## Examples and Sample Scenarios
+
+To better understand how to use Hex Micro and explore an extensive scenario, you can refer to the `example` directory in the project. This directory includes two different use cases:
+
+1. **Basic Example**: A simple and foundational example to get started with Hex Micro.
+2. **Real-World Scenario**: A comprehensive and practical example demonstrating the advanced capabilities of the framework in a real-world project.
+
+### Accessing the Examples
+- **GitHub**: Visit the [example](https://github.com/Tariux/hex/tree/main/example) directory in the GitHub repository.
+- **Module Folder**: All examples are available in the `example` folder within the `hex-micro` module.
+
+### Enhanced Documentation
+In the future, the project documentation will be further expanded, and additional content will be added. Be sure to follow the GitHub repository for updates and more details.
 
 ### Commands 
 
