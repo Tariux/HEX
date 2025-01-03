@@ -17,12 +17,23 @@
       "require": "./index.js"
     }
   },
-  "keywords": ["domain-driven-design" , "microservice", "hexagon" , "backend", "hex-micro"],
+  "bin": {
+    "hex": "./cli/index.js"
+  },
+  "keywords": [
+    "domain-driven-design",
+    "microservice",
+    "hexagon",
+    "backend",
+    "hex-micro"
+  ],
   "license": "MIT",
   "dependencies": {
     "amqplib": "^0.10.5",
     "axios": "^1.7.9",
     "chai": "^4.5.0",
+    "cli-table": "^0.3.11",
+    "commander": "^13.0.0",
     "dotenv": "^16.4.7",
     "eventemitter2": "^6.4.9",
     "express": "^4.21.2",

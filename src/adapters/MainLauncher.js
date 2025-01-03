@@ -32,7 +32,8 @@ class MainLauncher {
     stop() {
         return Promise.all(this.launchers.map((launcher) => launcher.stop())).then(() => {
             tools.logger.info('launchers are stopped.');
-            process.exit(1);
+            // process.exit(1);
+            return;
         });
     }
 }
