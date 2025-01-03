@@ -1,6 +1,6 @@
 {
   "name": "hex-micro",
-  "version": "1.1.1-beta.4",
+  "version": "1.1.2-beta.0",
   "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
   "main": "index.js",
   "author": "opium66",
@@ -31,9 +31,11 @@
   "dependencies": {
     "amqplib": "^0.10.5",
     "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
     "chai": "^4.5.0",
     "cli-table": "^0.3.11",
     "commander": "^13.0.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "eventemitter2": "^6.4.9",
     "express": "^4.21.2",

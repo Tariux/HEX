@@ -1,5 +1,6 @@
 const Command = require("../application/command/Command");
 const EventManager = require("../application/events/EventManager");
+const ConfigCenter = require("../config/ConfigCenter");
 
 class BaseServer {
     status = false;
@@ -12,6 +13,25 @@ class BaseServer {
         this.host = config.host;
         this.ssl = config.ssl;
         this.emitter = EventManager.getInstance().emitter;
+        this.#initWhiteList();
+    }
+
+    #initWhiteList() {
+        this.whitelistConfig = ConfigCenter.getInstance().get('whitelist') || false;
+        if (!this.whitelistConfig || typeof this.whitelistConfig?.routes === 'object') {
+            return true;
+        }
+        this.whitelistPatterns = new Set();
+        
+
+        this.whitelistConfig.routes.forEach(exclude => {
+            const whitelistMockCommand = new Command(exclude);
+            const whitelistPattern = whitelistMockCommand.pattern();
+            this.whitelistPatterns.add(whitelistPattern)
+        });
+        console.log(this.whitelistPatterns);
+
+
     }
 
     #validateServerConfig(server) {
@@ -21,11 +41,19 @@ class BaseServer {
         )
     }
 
+    #checkWhitelist(requestPattern) {
+
+    }
+
     handleIncomingRequest(request) {
         const command = new Command(request);
         const requestPattern = command.pattern();
         const responsePattern = `${requestPattern}:RESPONSE`;
-        
+
+        if (this.#checkWhitelist) {
+            
+        }
+
         const incoming = new Promise((resolve, reject) => {
             this.emitter.subscribe(responsePattern, (command) => {
                 resolve(command);

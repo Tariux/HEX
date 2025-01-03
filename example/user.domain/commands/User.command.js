@@ -1,14 +1,12 @@
-const { _EVENT } = require("../../..");
-const UserAggregate = require("../models/aggregates/User");
-const { v4: uuidv4 } = require('uuid');
+const UserAggregate = require('../models/aggregates/UserAggregate');
 
 class UserCommand {
-    
+
     static descriptor = {
         commandName: 'UserCommand',
         type: 'REQUEST',
         protocol: 'HTTP',
-        loader: ['domain.services.User', 'domain.services.Order'],
+        loader: ['domain.services.User'],
         contentType: 'text/json',
         routes: [
             {
@@ -42,7 +40,7 @@ class UserCommand {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',
-                middlewares: ['UserMiddleware' , 'UserAccess', 'AfterUserAccess', 'AfterUserAccessAA']
+                middlewares: ['UserMiddleware', 'UserAccess', 'AfterUserAccess', 'AfterUserAccessAA']
             },
             {
                 method: 'GET',
@@ -57,7 +55,7 @@ class UserCommand {
     }
 
     async getUser() {
-        const {uid} = this.command.queryParams;
+        const { uid } = this.command.queryParams;
         const user = await this.userService.get(uid);
         if (user) {
             return {
@@ -82,20 +80,43 @@ class UserCommand {
     }
 
     async createUser() {
-        const { firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
-        const uuid = uuidv4();
-        const user = new UserAggregate(uuid, firstName, lastName, email, yyyy, mm, dd);
-        _EVENT.publish('UserCreatedEvent', user, (incoming) => {
-        });
-        return {
-            status: 'success',
-            message: 'User created successfully',
-            user: await this.userService.create(user),
-        };
+        try {
+            try {
+                const createUser = await this.userService.create(this.command?.inputData);
+                if (createUser) {
+                    return {
+                        status: 'success',
+                        message: 'User created successfully',
+                        user: createUser,
+                    };
+                } else {
+                    return {
+                        status: 'fail',
+                        message: 'user cannot create',
+                        user: false,
+                    };
+                }
+            } catch (error) {
+                console.log('ERR:' , error);
+
+                return {
+                    status: 'fail',
+                    message: 'error while create user',
+                    error: error.message,
+                };
+                
+            }
+
+        } catch (error) {
+            console.log(error);
+
+        }
+
+
     }
 
     async updateUser() {
-        const {userID, firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
+        const { userID, firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
         const user = new UserAggregate(userID, firstName, lastName, email, yyyy, mm, dd);
         return {
             status: 'success',
@@ -105,7 +126,7 @@ class UserCommand {
     }
 
     async deleteUser() {
-        const {uid} = this.command.queryParams;
+        const { uid } = this.command.queryParams;
         const user = await this.userService.get(uid);
         if (user) {
             return {

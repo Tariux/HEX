@@ -1,7 +1,7 @@
 class UserCreatedEvent {
     static eventOptions = {
         eventName: 'UserCreatedEvent',
-        loader: ['domain.services.User' , 'domain.services.Order'],
+        loader: ['domain.services.User'],
     };
 
     constructor(services) {

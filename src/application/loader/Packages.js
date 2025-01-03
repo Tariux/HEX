@@ -6,7 +6,8 @@ class PackageValidator {
     static validatePackage(packageInput) {
         if (typeof packageInput === "string") {
             try {
-                return require(packageInput);
+                const packageInstance = require(packageInput);
+                packageInstace;
             } catch (error) {
                 tools.logger.error(`Cannot load package: ${packageInput}`, error);
                 return null;
@@ -70,24 +71,26 @@ class PackageManager {
 
     #registerPackage(packageInput, packageName) {
         try {
+            let name;
+            let customName;
             let packageInstance;
-            if (typeof packageInput === "string" && path.isAbsolute(packageInput)) {
+            if (typeof packageInput === "object" && packageInput.name && packageInput.path) {
+                customName = packageInput.name;
+                packageInstance = PackageValidator.validateFilePath(packageInput.path);
+            } else if (typeof packageInput === "string" && path.isAbsolute(packageInput)) {
                 packageInstance = PackageValidator.validateFilePath(packageInput);
             } else {
                 packageInstance = PackageValidator.validatePackage(packageInput);
             }
-
             if (!packageInstance) {
                 tools.logger.error(`Invalid package input`, packageInput);
                 return;
             }
 
-            const name = packageName || packageInput || packageInstance.name || packageInstance.constructor.name ;
+            name = customName || packageName || packageInput || packageInstance.name || packageInstance.constructor.name ;
             
             PackageManager.addPackage(name, packageInstance);
         } catch (error) {
-            console.log(error);
-            
             tools.logger.error(`Failed to register package`, error);
             tools.logger.error(error);
         }

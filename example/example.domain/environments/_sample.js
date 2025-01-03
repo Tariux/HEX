@@ -1,6 +1,19 @@
 const path = require('path');
 
 module.exports = {
+    "whitelist": {
+        "routes": [
+            {
+                type: 'REQUEST',
+                protocol: 'HTTP',
+                method: 'GET',
+                target: '/favicon.ico',
+            }
+        ],
+        "ip": [
+
+        ],
+    },
     "event": {
         "emitter": "eventemitter2"
     },
@@ -47,7 +60,7 @@ module.exports = {
             birthday_dd TEXT NOT NULL
             );
             `,
-            `
+                `
             CREATE TABLE IF NOT EXISTS profiles (
             userId TEXT PRIMARY KEY,
             firstName TEXT NOT NULL,
@@ -66,7 +79,7 @@ module.exports = {
         },
 
     },
-    "servers" : [
+    "servers": [
         {
             "name": "ServerNumberOne",
             "host": "localhost",

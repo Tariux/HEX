@@ -1,6 +1,19 @@
 const path = require('path');
 
 module.exports = {
+    "whitelist": {
+        "routes": [
+            {
+                type: 'REQUEST',
+                protocol: 'HTTP',
+                method: 'GET',
+                target: '/favicon.ico',
+            }
+        ],
+        "ip": [
+
+        ],
+    },
     "event": {
         "emitter": "eventemitter2"
     },

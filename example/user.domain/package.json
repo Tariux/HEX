@@ -1,0 +1,17 @@
+{
+  "name": "hex.user.domain",
+  "version": "1.0.0",
+  "description": "sample of hex micro package",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "hex start ./"
+  },
+  "keywords": [
+    "hex-micro"
+  ],
+  "author": "opiumdev <opiumdev@proton.me>",
+  "license": "MIT"
+}
