@@ -36,6 +36,7 @@ npm link (if needed)
 hex start <env>
 ```
 Starts the Hex Micro service using the specified environment configuration.
+or you can first use `hex create <path>` then start following directory
 #### Example:
 ```bash
 hex start <env_directory or project_directory>
