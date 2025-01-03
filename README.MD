@@ -17,7 +17,60 @@ Install the package via bun:
 ```bash
 bun install hex-micro
 ```
-## Project Setup
+
+## Project Setup CLI
+### A command-line interface (CLI) for managing Hex Micro projects and services.
+
+Notes
+Ensure that your environment directory contains at least one configuration file `(default.js, development.js, production.js, or test.js)`.
+Modify the templateDir path in the script if the template is stored in a different location.
+
+#### Installation
+install package and link the CLI tool if needed:
+```bash
+npm install hex (-g optinal)
+npm link (if needed)
+```
+#### Commands:
+```bash
+hex start <env>
+```
+Starts the Hex Micro service using the specified environment configuration.
+#### Example:
+```bash
+hex start <env_directory or project_directory>
+```
+Checks the specified environment path for required configuration files.
+Launches the Hex Micro service with the provided settings.
+Logs:
+Success: Service started successfully.
+Error: Detailed error messages when the service cannot start due to missing files or invalid paths.
+```bash
+hex create <projectPath>
+```
+Creates a new Hex Micro project at the specified location.
+Example:
+```bash
+hex create my-hex-project
+```
+
+This command:
+
+Copies the template directory to the specified path.
+Initializes the project structure.
+Logs:
+Success: Project created successfully at the specified location.
+Error: Target directory already exists or the template directory is missing.
+-h, --help
+Displays help information about available commands.
+
+Example:
+```bash
+hex --help
+```
+Shows a list of commands and their descriptions.
+
+## Project Setup Manual
 
 Initialize the project Create an entry file in the root of your project (or any where) and configure it with your environment setup. environment setup is a folder that keeps your project config for diffrent environment. you can create `default.js, development.js, production.js, test.js` in `<poject>/environment` (names are optional)
 
