@@ -1,9 +1,11 @@
 ## Hex ⬡
 ### A DDD Hexagonal Architecture for Flexible Web Applications
 
-Welcome to Hex, a pure JavaScript implementation of Domain-Driven Design (DDD) and Hexagonal Architecture designed to build flexible, scalable, and maintainable web applications, `and we’d love for you to be part of the Hex journey!`
+Welcome to Hex, a pure JavaScript implementation of a backend microservice built on Domain-Driven Design (DDD) principles. It simplifies building scalable, modular, and environment-aware backend applications. 
 
-**Hex-Micro** is a backend microservice framework built on Domain-Driven Design (DDD) principles. It simplifies building scalable, modular, and environment-aware backend applications. 
+`and also we’d love for you to be part of the Hex journey!`
+
+**Hex-Micro**  
 
 ## Installation
 
@@ -21,14 +23,14 @@ bun install hex-micro
 ## Project Setup CLI
 ### A command-line interface (CLI) for managing Hex Micro projects and services.
 
-Notes
+
 Ensure that your environment directory contains at least one configuration file `(default.js, development.js, production.js, or test.js)`.
 Modify the templateDir path in the script if the template is stored in a different location.
 
 #### Installation
 install package and link the CLI tool if needed:
 ```bash
-npm install hex (-g optinal)
+npm install hex-micro (-g optinal)
 npm link (if needed)
 ```
 #### Commands:
@@ -73,9 +75,9 @@ Shows a list of commands and their descriptions.
 
 ## Project Setup Manual
 
-Initialize the project Create an entry file in the root of your project (or any where) and configure it with your environment setup. environment setup is a folder that keeps your project config for diffrent environment. you can create `default.js, development.js, production.js, test.js` in `<poject>/environment` (names are optional)
+Initialize the project by create an entry file in the root of your project (or anywhere) and configure it with your environment setup. environment setup is a folder that keeps your project config for diffrent environments. you can create `default.js, development.js, production.js, test.js` in `<poject>/environment` (names are optional)
 
-Require the package Use the following code to import Hex-Micro in your project:
+Require the package by using the following code to import Hex-Micro in your project:
 ```javascript
 const path = require('path');
 const { _HEX } = require("hex-micro");
@@ -83,8 +85,7 @@ const { _HEX } = require("hex-micro");
 const hexApp = new _HEX(path.join(__dirname, './example.domain/environments')); // environment path inside your domain
 hexApp.launch();
 ```
-   
-Stop the service when needed You can stop the service by calling:
+when needed you can stop app by calling this method:
 ```javascript
 hexApp.stop();
 ```
@@ -159,7 +160,7 @@ Hex-Micro uses a structured directory layout for clean separation of concerns:
 ## Development 
 ## Examples and Sample Scenarios
 
-To better understand how to use Hex Micro and explore an extensive scenario, you can refer to the `example` directory in the project. This directory includes two different use cases:
+To better understand how to use Hex Micro and explore an scenario, you can refer to the `example` directory in the project. This directory includes two different use cases:
 
 1. **Basic Example**: A simple and foundational example to get started with Hex Micro.
 2. **Real-World Scenario**: A comprehensive and practical example demonstrating the advanced capabilities of the framework in a real-world project.
@@ -183,7 +184,5 @@ In the future, the project documentation will be further expanded, and additiona
 
 ## Links
 
-- GitHub: [Hex-Micro Framework](https://github.com/Tariux/hex)
+- GitHub: [Hex](https://github.com/Tariux/hex)
 - NPM: [hex-micro](https://www.npmjs.com/package/hex-micro)
-
-#### readme and documents is not ready yet, so sorry :>.
