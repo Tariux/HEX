@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "sample of hex micro package",
   "main": "index.js",
+  "workspaces": [
+    "../../"
+  ],
   "directories": {
     "test": "test"
   },
@@ -13,5 +16,8 @@
     "hex-micro"
   ],
   "author": "opiumdev <opiumdev@proton.me>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "hex-micro": "^1.1.1-beta.5"
+  }
 }

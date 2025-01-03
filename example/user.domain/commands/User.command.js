@@ -1,7 +1,6 @@
 const UserAggregate = require('../models/aggregates/UserAggregate');
 
 class UserCommand {
-
     static descriptor = {
         commandName: 'UserCommand',
         type: 'REQUEST',
@@ -13,7 +12,6 @@ class UserCommand {
                 method: 'DELETE',
                 target: '/user',
                 handler: 'deleteUser',
-                // loader: 'domain.anotherNamespace.AnotherService',
             },
             {
                 method: 'POST',
@@ -81,34 +79,26 @@ class UserCommand {
 
     async createUser() {
         try {
-            try {
-                const createUser = await this.userService.create(this.command?.inputData);
-                if (createUser) {
-                    return {
-                        status: 'success',
-                        message: 'User created successfully',
-                        user: createUser,
-                    };
-                } else {
-                    return {
-                        status: 'fail',
-                        message: 'user cannot create',
-                        user: false,
-                    };
-                }
-            } catch (error) {
-                console.log('ERR:' , error);
-
+            const createUser = await this.userService.create(this.command?.inputData);
+            if (createUser) {
+                return {
+                    status: 'success',
+                    message: 'User created successfully',
+                    user: createUser,
+                };
+            } else {
                 return {
                     status: 'fail',
-                    message: 'error while create user',
-                    error: error.message,
+                    message: 'user cannot create',
+                    user: false,
                 };
-                
             }
-
         } catch (error) {
-            console.log(error);
+            return {
+                status: 'fail',
+                message: 'error while create user',
+                error: error.message,
+            };
 
         }
 
