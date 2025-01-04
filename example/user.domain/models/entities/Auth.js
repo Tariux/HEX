@@ -6,7 +6,6 @@ class Auth extends BaseEntity {
         {
           require: {
             userId: 'string',
-            password: 'string',
           }
         },
         { userId, password }

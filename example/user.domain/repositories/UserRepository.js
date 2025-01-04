@@ -5,14 +5,14 @@ class UserRepository {
 
   async create(userAggregate) {
     const { profile, birthday, auth, metadata } = userAggregate;
-    const { userId, firstName, lastName, email, phoneNumber, age } = profile;
+    const { userId, firstName, lastName, email, phoneNumber } = profile;
     const { yyyy, mm, dd } = birthday;
     const { password } = auth;
     const { createdAt, updatedAt } = metadata;
     try {
       await this.db.query(
-        'INSERT INTO users (id, birthday_yyyy, birthday_mm, birthday_dd, age, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [userId, yyyy, mm, dd, age, createdAt, updatedAt]
+        'INSERT INTO users (id, birthday_yyyy, birthday_mm, birthday_dd, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)',
+        [userId, yyyy, mm, dd, createdAt, updatedAt]
       );
 
       await this.db.query(
@@ -25,10 +25,9 @@ class UserRepository {
         [userId, password]
       );
 
-      console.log('User created successfully');
       return userId;
     } catch (error) {
-      // console.error('Error creating user:', error);
+      console.error('Error creating user:', error);
       throw new Error('error while creating user');
     }
   }
@@ -41,7 +40,6 @@ class UserRepository {
           users.birthday_yyyy,
           users.birthday_mm,
           users.birthday_dd,
-          users.age,
           users.createdAt,
           users.updatedAt,
           profiles.firstName,
@@ -65,7 +63,6 @@ class UserRepository {
           lastName: user.lastName,
           email: user.email,
           phoneNumber: user.phoneNumber,
-          age: user.age,
         },
         birthday: {
           yyyy: user.birthday_yyyy,
@@ -102,7 +99,6 @@ class UserRepository {
           lastName: user.lastName,
           email: user.email,
           phoneNumber: user.phoneNumber,
-          age: user.age,
         },
         birthday: {
           yyyy: user.birthday_yyyy,
@@ -125,15 +121,15 @@ class UserRepository {
 
   async update(userAggregate) {
     const { profile, birthday, auth, metadata } = userAggregate;
-    const { userId, firstName, lastName, email, phoneNumber, age } = profile;
+    const { userId, firstName, lastName, email, phoneNumber } = profile;
     const { yyyy, mm, dd } = birthday;
     const { password } = auth;
     const { updatedAt } = metadata;
 
     try {
       await this.db.query(
-        'UPDATE users SET birthday_yyyy = ?, birthday_mm = ?, birthday_dd = ?, age = ?, updatedAt = ? WHERE id = ?',
-        [yyyy, mm, dd, age, updatedAt, userId]
+        'UPDATE users SET birthday_yyyy = ?, birthday_mm = ?, birthday_dd = ?, updatedAt = ? WHERE id = ?',
+        [yyyy, mm, dd, updatedAt, userId]
       );
 
       await this.db.query(
@@ -146,7 +142,7 @@ class UserRepository {
         [password, userId]
       );
 
-      console.log('User updated successfully');
+      return true;
     } catch (error) {
       console.error('Error updating user:', error);
       throw error;

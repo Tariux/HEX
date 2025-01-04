@@ -22,7 +22,7 @@ class UserAggregate {
       console.log('Error while hashing password for: ', data.userId);
       console.log(error);
     }
-    const profile = new Profile(data.userId, data.firstName, data.lastName, data.email, data.phoneNumber, data.age);
+    const profile = new Profile(data.userId, data.firstName, data.lastName, data.email, data.phoneNumber);
     const birthday = new Birthday(data.yyyy, data.mm, data.dd);
     const auth = new Auth(data.userId, hashedPassword || data.password);
     const metadata = {
@@ -33,13 +33,26 @@ class UserAggregate {
     return new UserAggregate(data.userId, profile, birthday, auth, metadata);
   }
 
+    // Factory method to create a new user
+    static async update(oldData, newData) {
+      const data = {...oldData.profile, ...oldData.birthday, ...oldData.auth, ...newData};
+      const profile = new Profile(data.userId, data.firstName, data.lastName, data.email, data.phoneNumber);
+      const birthday = new Birthday(data.yyyy, data.mm, data.dd);
+      const auth = new Auth(data.userId, data.password);
+      const metadata = {
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+  
+      return new UserAggregate(data.userId, profile, birthday, auth, metadata);
+    }
+
   // Update user profile
-  updateProfile(firstName, lastName, email, phoneNumber, age) {
+  updateProfile(firstName, lastName, email, phoneNumber) {
     this.profile.firstName = firstName;
     this.profile.lastName = lastName;
     this.profile.updateEmail(email);
     this.profile.updatePhoneNumber(phoneNumber);
-    this.profile.age = age;
     this.metadata.updatedAt = new Date().toISOString();
   }
 

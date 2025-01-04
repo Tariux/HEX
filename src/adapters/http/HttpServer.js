@@ -9,16 +9,18 @@ class HttpServer extends BaseServer {
         super(config);
     }
 
-    #parseQueryParams(target) {
-        const parsedUrl = url.parse(target, true);
-        return parsedUrl.query;
+    #parseQueryParams(req) {
+        const baseUrl = `http://${req.headers.host}`;
+        const parsedUrl = new URL(req.url, baseUrl);
+        const queryParams = Object.fromEntries(parsedUrl.searchParams.entries());
+        return queryParams;
     }
     
     listen() {
         try {
             
             this.app = http.createServer((req, res) => {
-                const queryParams = this.#parseQueryParams(req.url);
+                const queryParams = this.#parseQueryParams(req);
 
                 let body = '';
 

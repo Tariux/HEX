@@ -4,7 +4,6 @@ module.exports = [
     birthday_yyyy INTEGER NOT NULL,
     birthday_mm INTEGER NOT NULL,
     birthday_dd INTEGER NOT NULL,
-    age INTEGER NOT NULL,
     createdAt TEXT NOT NULL,
     updatedAt TEXT NOT NULL
 );`
@@ -13,8 +12,8 @@ module.exports = [
     userId TEXT PRIMARY KEY,
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    phoneNumber TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL,
+    phoneNumber TEXT NOT NULL,
     FOREIGN KEY (userId) REFERENCES users(id)
 );`
 ,

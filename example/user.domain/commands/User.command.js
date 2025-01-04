@@ -106,13 +106,37 @@ class UserCommand {
     }
 
     async updateUser() {
-        const { userID, firstName, lastName, email, yyyy, mm, dd } = this.command.inputData;
-        const user = new UserAggregate(userID, firstName, lastName, email, yyyy, mm, dd);
-        return {
-            status: 'success',
-            message: 'User updated successfully',
-            user: await this.userService.update(user),
-        };
+        try {
+            const uid = this.command?.queryParams?.uid;
+            if (!uid) {
+                return {
+                    status: 'fail',
+                    message: 'user id not valid ' + uid,
+                    user: false,
+                };
+            }
+            const updateUser = await this.userService.update(uid, this.command?.inputData);
+            if (updateUser) {
+                return {
+                    status: 'success',
+                    message: 'User updated successfully',
+                    user: updateUser,
+                };
+            } else {
+                return {
+                    status: 'fail',
+                    message: 'user cannot update',
+                    user: false,
+                };
+            }
+        } catch (error) {
+            return {
+                status: 'fail',
+                message: 'error while update user',
+                error: error.message,
+            };
+
+        }
     }
 
     async deleteUser() {

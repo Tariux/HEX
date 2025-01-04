@@ -3,7 +3,7 @@ const Email = require("../valueObjects/Email");
 const PhoneNumber = require("../valueObjects/PhoneNumber");
 
 class Profile extends BaseEntity {
-  constructor(userId, firstName, lastName, email, phoneNumber, age) {
+  constructor(userId, firstName, lastName, email, phoneNumber) {
     super(
       {
         require: {
@@ -12,10 +12,9 @@ class Profile extends BaseEntity {
           lastName: 'string',
           email: 'string',
           phoneNumber: 'string',
-          age: 'string',
         }
       },
-      { userId, firstName, lastName, email, phoneNumber, age }
+      { userId, firstName, lastName, email, phoneNumber }
     );
     this.validate();
     this.email = new Email(this.email); // Value Object

@@ -37,8 +37,28 @@ class UserService {
     return this.userRepository.delete(userID);
   }
 
-  async update(user) {
-    return this.userRepository.update(user);
+  async update(userId, data) {
+    if (!data) {
+      return;
+    }
+    delete data.phoneNumber;
+    delete data.email;
+    delete data.password;
+    let userAggregate;
+    try {
+      const userData = await this.userRepository.findById(userId);
+      if (!userData) {
+        throw new Error(userId + ' user does not exists')
+      }
+      userAggregate = await UserAggregate.update(userData, data)
+    } catch (error) {
+      throw new Error('invalid input data for user: ' + error.message);
+    }
+    try {
+      return this.userRepository.update(userAggregate);
+    } catch (error) {
+      throw new Error(error.message)
+    }
   }
 
   async get(userID) {
