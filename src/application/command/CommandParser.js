@@ -78,6 +78,7 @@ class CommandParser {
             payload: data || {}
         };
     }
+
 }
 
 module.exports = CommandParser;

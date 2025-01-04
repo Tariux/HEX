@@ -2,7 +2,8 @@ const path = require('path');
 const sqliteIntitalQueryConfig = require('./configs/sqliteIntitalQueryConfig');
 
 module.exports = {
-    "whitelist": {
+    "timeout": 5000,
+    "blacklist": {
         "routes": [
             {
                 type: 'REQUEST',

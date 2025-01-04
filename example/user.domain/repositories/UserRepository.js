@@ -29,7 +29,7 @@ class UserRepository {
       return userId;
     } catch (error) {
       // console.error('Error creating user:', error);
-      throw new Error(error.message || error)
+      throw new Error('error while creating user');
     }
   }
 

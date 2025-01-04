@@ -1,6 +1,7 @@
 const Command = require("../application/command/Command");
 const EventManager = require("../application/events/EventManager");
 const ConfigCenter = require("../config/ConfigCenter");
+const { tools } = require("../utils/ToolManager");
 
 class BaseServer {
     status = false;
@@ -13,25 +14,23 @@ class BaseServer {
         this.host = config.host;
         this.ssl = config.ssl;
         this.emitter = EventManager.getInstance().emitter;
-        this.#initWhiteList();
+        this.timeout = ConfigCenter.getInstance().get('timeout') || 2000;
+        this.#initWhitelist();
     }
 
-    #initWhiteList() {
-        this.whitelistConfig = ConfigCenter.getInstance().get('whitelist') || false;
-        if (!this.whitelistConfig || typeof this.whitelistConfig?.routes === 'object') {
-            return true;
+    #initWhitelist() {
+        this.blacklistConfig = ConfigCenter.getInstance().get('blacklist') || false;
+        if (!this.blacklistConfig) {
+            return;
         }
-        this.whitelistPatterns = new Set();
-        
-
-        this.whitelistConfig.routes.forEach(exclude => {
-            const whitelistMockCommand = new Command(exclude);
-            const whitelistPattern = whitelistMockCommand.pattern();
-            this.whitelistPatterns.add(whitelistPattern)
+        if (typeof this.blacklistConfig?.routes !== 'object') {
+            return;
+        }
+        this.blacklistPatterns = new Set();
+        this.blacklistConfig.routes.forEach(exclude => {
+            const blacklistPattern = Command.pattern(exclude);
+            this.blacklistPatterns.add(blacklistPattern)
         });
-        console.log(this.whitelistPatterns);
-
-
     }
 
     #validateServerConfig(server) {
@@ -41,27 +40,36 @@ class BaseServer {
         )
     }
 
-    #checkWhitelist(requestPattern) {
-
-    }
-
     handleIncomingRequest(request) {
         const command = new Command(request);
         const requestPattern = command.pattern();
         const responsePattern = `${requestPattern}:RESPONSE`;
 
-        if (this.#checkWhitelist) {
-            
+        if (this.blacklistPatterns && this.blacklistPatterns.has(requestPattern)) {
+            tools.logger.warn(`[REJECT]: new command ${requestPattern} at ${new Date().getTime()}`);
+            return new Promise((resolve, reject) => {
+                reject('blacklist');
+            });
         }
 
         const incoming = new Promise((resolve, reject) => {
             this.emitter.subscribe(responsePattern, (command) => {
+                clearTimeout(timeout)
                 resolve(command);
             });
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
+                tools.logger.info(`[TIMEOUT]: new command ${requestPattern} at ${new Date().getTime()}`);
                 reject('timeout');
-            }, 2000);
+            }, this.timeout);
         })
+        .catch((error) => {
+            tools.logger.error(`[ERROR]: new command ${requestPattern} at ${new Date().getTime()}`);
+            tools.logger.error(error);
+            return new Promise((resolve, reject) => {
+                reject('blacklist');
+            });
+        })
+        tools.logger.info(`[OK]: new command ${requestPattern} at ${new Date().getTime()}`);
 
         this.emitter.publish(requestPattern, command);
         return incoming;

@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    "whitelist": {
+    "blacklist": {
         "routes": [
             {
                 type: 'REQUEST',
