@@ -17,8 +17,8 @@ class Profile extends BaseEntity {
       { userId, firstName, lastName, email, phoneNumber }
     );
     this.validate();
-    this.email = new Email(this.email); // Value Object
-    this.phoneNumber = new PhoneNumber(this.phoneNumber); // Value Object
+    this.email = new Email(this.email).toString(); // Value Object
+    this.phoneNumber = new PhoneNumber(this.phoneNumber).toString(); // Value Object
   }
 
   updateEmail(newEmail) {

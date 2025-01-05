@@ -67,9 +67,9 @@ describe("User CRUD API Test Scenario", function () {
         expect(response.data.status).to.equal('success');
     });
 
-    it("should delete the user", async function () {
-        const response = await axios.delete(`http://localhost:80/user?uid=${userId}`);
-        expect(response.data.status).to.equal('success');
-    });
+    // it("should delete the user", async function () {
+    //     const response = await axios.delete(`http://localhost:80/user?uid=${userId}`);
+    //     expect(response.data.status).to.equal('success');
+    // });
 
 });

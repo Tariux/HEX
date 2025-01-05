@@ -32,6 +32,45 @@ class UserRepository {
     }
   }
 
+  async findProfileByKey(key , value) {
+    try {
+      const [user] = await this.db.query(
+        `SELECT * FROM profiles
+         JOIN users ON profiles.userId = users.id
+         JOIN auth ON profiles.userId = auth.userId
+         WHERE profiles.${key} = ?`,
+        [value]
+    );
+
+      if (!user) return null;
+
+      return {
+        profile: {
+          userId: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+        },
+        birthday: {
+          yyyy: user.birthday_yyyy,
+          mm: user.birthday_mm,
+          dd: user.birthday_dd,
+        },
+        auth: {
+          password: user.password,
+        },
+        metadata: {
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  }
+
   async findById(userId) {
     try {
       const [user] = await this.db.query(
