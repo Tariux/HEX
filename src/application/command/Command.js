@@ -22,6 +22,14 @@ class Command {
         return this.signature;
     }
 
+    setSession(session) {
+        this.data.session = session;
+    }
+
+    getSession() {
+        return this.data.session;
+    }
+
     setResponse(response) {
         this.response = response;
     }

@@ -60,7 +60,7 @@ class Http2Server extends BaseServer {
                         }
                     }
 
-                    this.handleIncomingRequest({ type: 'HTTPS', data: req, inputData, queryParams })
+                    this.handleIncomingRequest({ type: 'HTTPS', data: req, inputData, queryParams }, res)
                         .then((command) => {
                             const contentType = command?.dispatcher?.contentType || 'text/plain';
                             res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });

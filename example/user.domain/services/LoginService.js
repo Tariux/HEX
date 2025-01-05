@@ -30,7 +30,7 @@ class LoginService {
       const foundPassword = user.data.auth.password;
       const validate = await this.hash.validatePassword(inputPassword, foundPassword);
       if (validate) {
-        return true;
+        return user.input;
       }
     } catch (error) {
       throw new Error('invalid password');

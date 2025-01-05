@@ -10,13 +10,13 @@ class LoginCommand {
         contentType: 'text/json',
         routes: [
             {
-                method: 'GET',
-                target: '/login',
+                method: 'POST',
+                target: '/check',
                 handler: 'check',
             },
             {
-                method: 'GET',
-                target: '/login',
+                method: 'POST',
+                target: '/check',
                 handler: 'check',
                 protocol: 'HTTPS',
             },
@@ -55,6 +55,8 @@ class LoginCommand {
                 message: 'Login failed',
             };
         }
+        this.command.session.createSession(validateUser);
+        
         return {
             status: 'success',
             message: 'Logged in',

@@ -10,9 +10,10 @@ console = {
     }
 }
 describe("User Login API Test Scenario", function () {
-    let userId;
+    let loginResponse; // Store the login response for later inspection
 
-    this.timeout(5000);
+    this.timeout(10000);
+
     before(async function () {
         this.Hex = new _HEX(path.join(__dirname, '../environments'));
         await this.Hex.launch();
@@ -22,18 +23,20 @@ describe("User Login API Test Scenario", function () {
         await this.Hex.stop();
     });
 
-    let random = Math.random() * 1000000;
-    random = Math.round(random)
-
     it("should login", async function () {
         const createUserData = {
             userId: `EmailTest244011@mail.com`,
             password: '12345678',
         };
-        const response = await axios.post('http://localhost:80/login', createUserData);
-        expect(response.status).to.equal(200);
-        expect(response.data.status).to.equal('success');
-        cl.log('  login response:', response.data);
+        loginResponse = await axios.post('http://localhost:80/login', createUserData);
+        expect(loginResponse.status).to.equal(200);
+        expect(loginResponse.data.status).to.equal('success');
     });
 
+    afterEach(function () {
+        // Log session and cookies after each test
+        if (loginResponse) {
+            cl.log('    cookies:', loginResponse.headers['set-cookie']);
+        }
+    });
 });

@@ -40,7 +40,7 @@ class HttpServer extends BaseServer {
                         }
                     }
 
-                                        this.handleIncomingRequest({ type: 'HTTP', data: req, inputData, queryParams }).then(command => {
+                    this.handleIncomingRequest({ type: 'HTTP', data: req, inputData, queryParams }, res).then(command => {
                         const contentType = command?.dispatcher?.contentType || 'text/plain';
                         res.writeHead(command?.statusCode || 400, { 'Content-Type': contentType });
                         switch (contentType) {

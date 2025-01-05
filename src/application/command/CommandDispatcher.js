@@ -122,16 +122,13 @@ class CommandDispatcher {
      * @param {Object} payload - The payload for the command.
      * @returns {Promise} - The result of the command execution.
      */
-    async dispatchCommand(pattern, payload = {}, command = false) {
+    async dispatchCommand(pattern, payload = {}, command) {
         const { handler, method, middlewares } = this.handlers.get(pattern) || {};
         if (!handler || typeof handler[method] !== 'function') {
             throw new Error(`handler or method '${method}' not found for pattern: '${pattern}'.`);
         }
 
-        if (command) {
-            handler.command = command.data;
-        }
-
+        handler.command = command.data;
         let handlerMiddlewares;
         let beforeMiddlewares = [];
         let afterMiddlewares = [];

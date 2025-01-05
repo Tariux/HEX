@@ -1,6 +1,7 @@
 const Command = require("../application/command/Command");
 const EventManager = require("../application/events/EventManager");
 const ConfigCenter = require("../config/ConfigCenter");
+const SessionManager = require("../utils/SessionManager");
 const { tools } = require("../utils/ToolManager");
 
 class BaseServer {
@@ -40,7 +41,7 @@ class BaseServer {
         )
     }
 
-    handleIncomingRequest(request) {
+    handleIncomingRequest(request, response) {
         const command = new Command(request);
         const requestPattern = command.pattern();
         const responsePattern = `${requestPattern}:RESPONSE`;
@@ -70,7 +71,7 @@ class BaseServer {
             });
         })
         tools.logger.info(`[OK]: new command ${requestPattern} at ${new Date().getTime()}`);
-
+        command.setSession(new SessionManager(request, response))
         this.emitter.publish(requestPattern, command);
         return incoming;
 
