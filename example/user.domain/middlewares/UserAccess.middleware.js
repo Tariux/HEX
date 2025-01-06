@@ -9,7 +9,6 @@ class UserAccess {
 
     handle(command, next) {
         console.log('MIDDLE WARE 1' );
-        
         next()
     }
 };

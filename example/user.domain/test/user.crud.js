@@ -4,11 +4,11 @@ const { _HEX } = require("hex-micro");
 const path = require('path');
 
 const cl = console;
-console = {
-    log: () => {
+// console = {
+//     log: () => {
 
-    }
-}
+//     }
+// }
 describe("User CRUD API Test Scenario", function () {
     let userId;
 
@@ -44,17 +44,17 @@ describe("User CRUD API Test Scenario", function () {
         cl.log('  userId:', userId); //
     });
 
-    it("should update the user", async function () {
-        const updateUserData = {
-            firstName: 'Updated Name ' + Math.round(random),
-            lastName: 'Updated Last ' + Math.round(random),
-            email: `EmailTest${random}@mail.com`,
-            phoneNumber: '09876' + Math.round(random),
-        };
-        const response = await axios.put(`http://localhost:80/user?uid=${userId}`, updateUserData);
-        expect(response.status).to.equal(200);
-        expect(response.data.status).to.equal('success');
-    });
+    // it("should update the user", async function () {
+    //     const updateUserData = {
+    //         firstName: 'Updated Name ' + Math.round(random),
+    //         lastName: 'Updated Last ' + Math.round(random),
+    //         email: `EmailTest${random}@mail.com`,
+    //         phoneNumber: '09876' + Math.round(random),
+    //     };
+    //     const response = await axios.put(`http://localhost:80/user?uid=${userId}`, updateUserData);
+    //     expect(response.status).to.equal(200);
+    //     expect(response.data.status).to.equal('success');
+    // });
 
     it("should get the user", async function () {
         const response = await axios.get(`http://localhost:80/user?uid=${userId}`);

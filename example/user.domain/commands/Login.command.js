@@ -56,16 +56,39 @@ class LoginCommand {
             };
         }
         this.command.session.createSession(validateUser);
-        
+
         return {
             status: 'success',
             message: 'Logged in',
         };
-
     }
 
     async check() {
-        return await this.login();
+        try {
+            const sessions = this.command.session.getSession();
+            if (!sessions) {
+                return {
+                    status: 'fail',
+                    message: 'session not found',
+                };
+            }
+            const validateUser = await this.loginService.check({userId: sessions.data.userId, password: sessions.data.password});
+            if (!validateUser) {
+                return {
+                    status: 'fail',
+                    message: 'check failed',
+                };
+            }
+            return {
+                status: 'success',
+            };
+        } catch (error) {
+            console.log('error', error);
+            return {
+                status: 'fail',
+            };
+        }
+
     }
 };
 

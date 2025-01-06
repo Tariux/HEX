@@ -1,111 +1,91 @@
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require('uuid');
+const SessionStorage = require('./SessionStorage');
 
 class SessionManager {
   #req;
   #res;
+  #sessions;
+
   constructor(req, res) {
     this.#req = req;
     this.#res = res;
-    this.sessions = {}; // Use an object for better session management
+    this.#sessions = SessionStorage;
   }
 
-  /**
-   * Create a new session and set a session ID cookie.
-   * @param {object} data - The data to associate with the session.
-   * @returns {string} - The session ID.
-   */
-  createSession(data) {
-    const sessionId = uuidv4();
-    this.sessions[sessionId] = data;
-    this.setCookie("sessionId", sessionId, {
-      httpOnly: true,
-      path: "/",
-    });
+  createSession(data, ttl = 3600) {
+    try {
+      const sessionId = uuidv4();
+      this.#sessions.add(sessionId, data, ttl);
 
-    return sessionId;
+      this.#setCookie("sessionId", sessionId, {
+        httpOnly: true,
+        path: '/',
+        sameSite: 'strict',
+        // secure: true, // Uncomment if using HTTPS
+      });
+      return sessionId;
+    } catch (error) {
+      console.log('create cookie error', error);
+      return false;
+    }
   }
 
-  /**
-   * Get session data from the request.
-   * @returns {object|null} - The session data, or null if not found.
-   */
   getSession() {
-    const sessionId = this.getCookie("sessionId");
-    if (sessionId && this.sessions[sessionId]) {
-      return this.sessions[sessionId];
+    try {
+      const sessionId = this.#getCookie("sessionId");
+      if (sessionId) {
+        const data = this.#sessions.get(sessionId) || null;
+        return { sessionId, data };
+      }
+    } catch (error) {
+      console.log('get cookie error', error);
+      return false;
     }
-
-    return null; // No session found
   }
 
-  /**
-   * Destroy a session and clear the session ID cookie.
-   * @param {string} sessionId - The session ID to destroy.
-   */
   destroySession(sessionId) {
-    if (this.sessions[sessionId]) {
-      delete this.sessions[sessionId]; // Remove session data
-      this.deleteCookie("sessionId", { path: "/" }); // Clear cookie
+    try {
+      if (this.#sessions.has(sessionId)) {
+        this.#sessions.drop(sessionId);
+        this.#deleteCookie("sessionId", { path: '/' });
+        return true;
+      }
+    } catch (error) {
+      console.log('destroy cookie error', error);
+      return false;
     }
   }
 
-  /**
-   * Set a cookie in the response.
-   * @param {string} name - The name of the cookie.
-   * @param {string} value - The value of the cookie.
-   * @param {object} options - Cookie options (e.g., httpOnly, maxAge, path, secure, sameSite).
-   */
-  setCookie(name, value, options = {}) {
-    const cookieOptions = [
-      `${name}=${value}`,
-      options.path ? `Path=${options.path}` : "Path=/",
-      options.httpOnly ? "HttpOnly" : "",
-      options.secure ? "Secure" : "",
-      options.maxAge ? `Max-Age=${options.maxAge}` : "",
-      options.expires ? `Expires=${options.expires.toUTCString()}` : "",
-      options.sameSite ? `SameSite=${options.sameSite}` : "",
-    ]
-      .filter(Boolean)
-      .join("; ");
-
-    // Ensure the Set-Cookie header is an array
-    let cookies = this.#res.getHeader("Set-Cookie") || [];
-    if (typeof cookies === "string") {
-      cookies = [cookies]; // Convert to array if it's a single string
+  #setCookie(name, value, options = {}) {
+    try {
+      let cookieString = `${name}=${value}`;
+      if (options.path) cookieString += `; Path=${options.path}`;
+      if (options.httpOnly) cookieString += `; HttpOnly`;
+      if (options.secure) cookieString += `; Secure`;
+      if (options.maxAge) cookieString += `; Max-Age=${options.maxAge}`;
+      if (options.expires) cookieString += `; Expires=${options.expires.toUTCString()}`;
+      if (options.sameSite) cookieString += `; SameSite=${options.sameSite}`;
+      this.#res.setHeader('Set-Cookie', cookieString);
+      return true;
+    } catch (error) {
+      console.log('set cookie error', error);
+      return false;
     }
-    cookies.push(cookieOptions); // Add the new cookie
-    this.#res.setHeader("Set-Cookie", cookies); // Set the updated header
   }
 
-  /**
-   * Get a cookie from the request.
-   * @param {string} name - The name of the cookie.
-   * @returns {string|null} - The value of the cookie, or null if not found.
-   */
-  getCookie(name) {
+  #getCookie(name) {
     const cookies = this.#req.headers.cookie;
-
-    if (cookies) {
-      const cookiePairs = cookies
-        .split(";")
-        .map((cookie) => cookie.trim().split("="));
-      const cookieObject = Object.fromEntries(cookiePairs);
-      return cookieObject[name] || null;
+    if (!cookies) {
+      console.log('No cookies found in request headers');
+      return null;
     }
-
-    return null;
+    const cookiePairs = cookies.split('; ').map(pair => pair.split('='));
+    const cookieObject = Object.fromEntries(cookiePairs);
+    return cookieObject[name] || null;
   }
 
-  /**
-   * Delete a cookie in the response.
-   * @param {string} name - The name of the cookie.
-   * @param {object} options - Cookie options (e.g., path).
-   */
-  deleteCookie(name, options = {}) {
-    this.setCookie(name, "", {
-      ...options,
-      expires: new Date(0), // Set expiration date to the past
-    });
+  #deleteCookie(name, options = {}) {
+    this.#setCookie(name, "", { ...options, expires: new Date(0) });
   }
 }
 

@@ -20,11 +20,13 @@ class HttpServer extends BaseServer {
         try {
             
             this.app = http.createServer((req, res) => {
+                console.log(req.headers.cookie);
+                
                 const queryParams = this.#parseQueryParams(req);
 
                 let body = '';
 
-                                req.on('data', (chunk) => {
+                req.on('data', (chunk) => {
                     body += chunk.toString();
                 });
 

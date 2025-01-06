@@ -45,6 +45,7 @@ class BaseServer {
         const command = new Command(request);
         const requestPattern = command.pattern();
         const responsePattern = `${requestPattern}:RESPONSE`;
+        command.setSession(new SessionManager(request.data, response))
 
         if (this.blacklistPatterns && this.blacklistPatterns.has(requestPattern)) {
             tools.logger.warn(`[REJECT]: new command ${requestPattern} at ${new Date().getTime()}`);
@@ -70,8 +71,8 @@ class BaseServer {
                 reject('blacklist');
             });
         })
+
         tools.logger.info(`[OK]: new command ${requestPattern} at ${new Date().getTime()}`);
-        command.setSession(new SessionManager(request, response))
         this.emitter.publish(requestPattern, command);
         return incoming;
 
