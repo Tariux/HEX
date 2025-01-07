@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const SessionStorage = require('./SessionStorage');
+const jwt = require('jsonwebtoken');
 
 class SessionManager {
   #req;
@@ -12,27 +13,48 @@ class SessionManager {
     this.#sessions = SessionStorage;
   }
 
-  createSession(data, ttl = 3600) {
+  createSession(data, ttl = 3600, secure = false) {
     try {
       const sessionId = uuidv4();
       this.#sessions.add(sessionId, data, ttl);
 
-      this.#setCookie("sessionId", sessionId, {
+      let token;
+      if (secure) {
+        const expirationTime = Math.floor(Date.now() / 1000) + ttl; // 1 hour from now
+        token = jwt.sign(
+          { data: sessionId, exp: expirationTime }, // Add `exp` manually
+          process.env.SECRET_KEY
+        );
+      } else {
+        token = sessionId;
+      }
+
+      this.#setCookie("sessionId", token, {
         httpOnly: true,
         path: '/',
         sameSite: 'strict',
         // secure: true, // Uncomment if using HTTPS
       });
-      return sessionId;
+      return true;
     } catch (error) {
       console.log('create cookie error', error);
       return false;
     }
   }
 
-  getSession() {
+  getSession(secure = false) {
     try {
-      const sessionId = this.#getCookie("sessionId");
+      let sessionId = this.#getCookie("sessionId");
+      if (secure) {
+        jwt.verify(sessionId, process.env.SECRET_KEY, (err, decoded) => {
+          if (err) {
+            console.error('Token verification failed:', err.message);
+            return false;
+          } else {
+            sessionId = decoded.data;
+          }
+        });
+      }
       if (sessionId) {
         const data = this.#sessions.get(sessionId) || null;
         return { sessionId, data };

@@ -41,9 +41,11 @@ describe("User Login API Test Scenario", function () {
         if (!cookies) {
             throw new Error('No cookies found. Login might have failed.');
         }
+        // const fakeCookie = 'sessionId=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNDY5NTNjMzktODQ3MC00ZjFhLTg0NjEtZGE3ZmYwNTEwN2EwIiwiZXhwIjoxNzM2MjgzMDMxLCJpYXQiOjE3MzYyNzk0MzF9.tdZEOx0pm2RhGZ91QsjlvueiRjKLVcdyJ8G4QgOSiYI; Path=/; HttpOnly; SameSite=strict';
         const checkResponse = await axios.post('http://localhost:80/check', {}, {
             headers: {
-                Cookie: cookies.join('; ') // Include cookies in the request
+                Cookie: cookies.join('; ')  
+                // Cookie: fakeCookie  
             }
         });
         expect(checkResponse.status).to.equal(200);

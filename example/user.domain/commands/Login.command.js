@@ -55,7 +55,8 @@ class LoginCommand {
                 message: 'Login failed',
             };
         }
-        this.command.session.createSession(validateUser);
+        delete validateUser.errors;
+        this.command.session.createSession(validateUser, 3600, true);
 
         return {
             status: 'success',
@@ -65,8 +66,8 @@ class LoginCommand {
 
     async check() {
         try {
-            const sessions = this.command.session.getSession();
-            if (!sessions) {
+            const sessions = this.command.session.getSession(true);
+            if (!sessions || !sessions.data) {
                 return {
                     status: 'fail',
                     message: 'session not found',
