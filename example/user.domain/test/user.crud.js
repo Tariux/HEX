@@ -4,11 +4,11 @@ const { _HEX } = require("hex-micro");
 const path = require('path');
 
 const cl = console;
-// console = {
-//     log: () => {
+console = {
+    log: () => {
 
-//     }
-// }
+    }
+}
 describe("User CRUD API Test Scenario", function () {
     let userId;
 
@@ -36,7 +36,7 @@ describe("User CRUD API Test Scenario", function () {
             mm: '01',
             dd: '01'
         };
-        const response = await axios.post('http://localhost:80/user', createUserData);
+        const response = await axios.post('http://localhost:3000/user', createUserData);
         expect(response.status).to.equal(200);
         expect(response.data.status).to.equal('success');
         userId = response.data.user;
@@ -51,24 +51,24 @@ describe("User CRUD API Test Scenario", function () {
     //         email: `EmailTest${random}@mail.com`,
     //         phoneNumber: '09876' + Math.round(random),
     //     };
-    //     const response = await axios.put(`http://localhost:80/user?uid=${userId}`, updateUserData);
+    //     const response = await axios.put(`http://localhost:3000/user?uid=${userId}`, updateUserData);
     //     expect(response.status).to.equal(200);
     //     expect(response.data.status).to.equal('success');
     // });
 
     it("should get the user", async function () {
-        const response = await axios.get(`http://localhost:80/user?uid=${userId}`);
+        const response = await axios.get(`http://localhost:3000/user?uid=${userId}`);
         expect(response.status).to.equal(200); // 
         expect(response.data.status).to.equal('success');
     });
 
     it("should get all users", async function () {
-        const response = await axios.get('http://localhost:80/users');
+        const response = await axios.get('http://localhost:3000/users');
         expect(response.data.status).to.equal('success');
     });
 
     it("should delete the user", async function () {
-        const response = await axios.delete(`http://localhost:80/user?uid=${userId}`);
+        const response = await axios.delete(`http://localhost:3000/user?uid=${userId}`);
         expect(response.data.status).to.equal('success');
     });
 

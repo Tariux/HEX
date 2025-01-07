@@ -1,7 +1,8 @@
+const hash = require("./Hash");
 const Logger = require("./Logger");
-
 const tools = {
     logger: new Logger(),
+    hash: hash,
     helper: {
         groupBy: (items, key) => {
             return items.reduce((grouped, item) => {
@@ -14,7 +15,7 @@ const tools = {
             }, {});
         }
         
-    }
+    },
 }
 
 exports.tools = tools;

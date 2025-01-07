@@ -51,14 +51,14 @@ module.exports = {
         {
             "name": "secure-server",
             "host": "localhost",
-            "port": 442,
+            "port": 3001,
             "type": "http",
             "ssl": true,
         },
         {
             "name": "http-server",
             "host": "localhost",
-            "port": 80,
+            "port": 3000,
             "type": "http",
         },
         {

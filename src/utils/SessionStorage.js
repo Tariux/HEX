@@ -5,7 +5,7 @@ class SessionStorage {
         }
         this.sessions = new Map();
         this.expirationMap = new Map();
-        this.cleanupInterval = 1000; // 1 minute
+        this.cleanupInterval = 60000; // 1 minute
         this.isCleanupRunning = false;
         SessionStorage.instance = this;
         if (gc) {

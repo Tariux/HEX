@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const SessionStorage = require('./SessionStorage');
 const jwt = require('jsonwebtoken');
+const { tools } = require('./ToolManager');
 
 class SessionManager {
   #req;
@@ -17,7 +18,6 @@ class SessionManager {
     try {
       const sessionId = uuidv4();
       this.#sessions.add(sessionId, data, ttl);
-
       let token;
       if (secure) {
         const expirationTime = Math.floor(Date.now() / 1000) + ttl; // 1 hour from now
@@ -25,6 +25,7 @@ class SessionManager {
           { data: sessionId, exp: expirationTime }, // Add `exp` manually
           process.env.SECRET_KEY
         );
+        token = tools.hash.encrypt(token);
       } else {
         token = sessionId;
       }
@@ -46,6 +47,10 @@ class SessionManager {
     try {
       let sessionId = this.#getCookie("sessionId");
       if (secure) {
+        if (!tools.hash.isValidHash(sessionId)) {
+          return false;
+        }
+        sessionId = tools.hash.decrypt(sessionId);
         jwt.verify(sessionId, process.env.SECRET_KEY, (err, decoded) => {
           if (err) {
             console.error('Token verification failed:', err.message);

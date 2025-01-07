@@ -1,6 +1,6 @@
 {
   "name": "hex-micro",
-  "version": "1.1.1-beta.10",
+  "version": "1.1.1-beta.11",
   "description": "A DDD Hexagonal Architecture for Flexible Web Applications",
   "main": "index.js",
   "author": "opium66",

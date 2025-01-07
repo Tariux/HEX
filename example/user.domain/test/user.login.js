@@ -30,7 +30,7 @@ describe("User Login API Test Scenario", function () {
             password: '12345678',
         };
 
-        loginResponse = await axios.post('http://localhost:80/login', loginData);
+        loginResponse = await axios.post('http://localhost:3000/login', loginData);
         expect(loginResponse.status).to.equal(200);
         expect(loginResponse.data.status).to.equal('success');
         cookies = loginResponse.headers['set-cookie'];
@@ -42,7 +42,7 @@ describe("User Login API Test Scenario", function () {
             throw new Error('No cookies found. Login might have failed.');
         }
         // const fakeCookie = 'sessionId=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNDY5NTNjMzktODQ3MC00ZjFhLTg0NjEtZGE3ZmYwNTEwN2EwIiwiZXhwIjoxNzM2MjgzMDMxLCJpYXQiOjE3MzYyNzk0MzF9.tdZEOx0pm2RhGZ91QsjlvueiRjKLVcdyJ8G4QgOSiYI; Path=/; HttpOnly; SameSite=strict';
-        const checkResponse = await axios.post('http://localhost:80/check', {}, {
+        const checkResponse = await axios.post('http://localhost:3000/check', {}, {
             headers: {
                 Cookie: cookies.join('; ')  
                 // Cookie: fakeCookie  
