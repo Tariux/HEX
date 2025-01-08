@@ -62,9 +62,11 @@ describe("User CRUD API Test Scenario", function () {
         expect(response.data.status).to.equal('success');
     });
 
-    it("should get all users", async function () {
-        const response = await axios.get('http://localhost:3000/users');
-        expect(response.data.status).to.equal('success');
+    it("should fail get all users (should be login)", async function () {
+        const response = await axios.post('http://localhost:3000/users');
+        expect(response.data.status).to.not.equal('success');
+        // expect(response.data.status).to.equal('success');
+
     });
 
     it("should delete the user", async function () {

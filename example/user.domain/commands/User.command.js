@@ -41,6 +41,12 @@ class UserCommand {
                 middlewares: ['UserAccess']
             },
             {
+                method: 'POST',
+                target: '/users',
+                handler: 'getUsers',
+                middlewares: ['UserAccess']
+            },
+            {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',

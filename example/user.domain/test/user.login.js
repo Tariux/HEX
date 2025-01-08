@@ -4,11 +4,11 @@ const { _HEX } = require("hex-micro");
 const path = require('path');
 
 const cl = console;
-console = {
-    log: () => {
+// console = {
+//     log: () => {
 
-    }
-}
+//     }
+// }
 describe("User Login API Test Scenario", function () {
     let loginResponse; // Store the login response for later inspection
     let cookies; // Store cookies for session persistence
@@ -44,13 +44,23 @@ describe("User Login API Test Scenario", function () {
         // const fakeCookie = 'sessionId=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiNDY5NTNjMzktODQ3MC00ZjFhLTg0NjEtZGE3ZmYwNTEwN2EwIiwiZXhwIjoxNzM2MjgzMDMxLCJpYXQiOjE3MzYyNzk0MzF9.tdZEOx0pm2RhGZ91QsjlvueiRjKLVcdyJ8G4QgOSiYI; Path=/; HttpOnly; SameSite=strict';
         const checkResponse = await axios.post('http://localhost:3000/check', {}, {
             headers: {
-                Cookie: cookies.join('; ')  
+                Cookie: cookies.join('; ')
                 // Cookie: fakeCookie  
             }
         });
         expect(checkResponse.status).to.equal(200);
         expect(checkResponse.data.status).to.equal('success');
     });
+
+    it("should get all users (need to be login)", async function () {
+        const response = await axios.post('http://localhost:3000/users', {}, {
+            headers: {
+                Cookie: cookies.join('; ')
+            }
+        });
+        expect(response.data.status).to.equal('success');
+    });
+
 
     // afterEach(function () {
     //     // Log session and cookies after each test

@@ -10,16 +10,16 @@ class UserAccess {
     }
 
     async handle(command, next) {
-            const sessions = command.data.session.getSession(true);
-            if (!sessions || !sessions.data) {
-                next('session not found');
-            }
-            const validateUser = await this.loginService.check({userId: sessions.data.userId, password: sessions.data.password});
-            if (!validateUser) {
-                next('check failed');
-            } else {
-                next();
-            }
+        const sessions = command.data.session.getSession(true);
+        if (!sessions || !sessions.data) {
+            next('session not found');
+        }
+        const validateUser = await this.loginService.check({ userId: sessions.data.userId, password: sessions.data.password });
+        if (!validateUser) {
+            next('check failed');
+        } else {
+            next();
+        }
     }
 };
 

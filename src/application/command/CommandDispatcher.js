@@ -49,7 +49,7 @@ class CommandDispatcher {
                 tools.logger.error('publish to command failed');
                 tools.logger.error(error);
                 command.setError(error);
-                command.setStatusCode(401);
+                command.setStatusCode(400);
                 this.emitter.publish(`${command.signature}:RESPONSE`, command);
             }
         });
@@ -88,7 +88,7 @@ class CommandDispatcher {
             }
 
             try {
-                await callableMiddleware(command, next, payload);
+                await callableMiddleware.bind(middleware, command, next, payload)();
             } catch (error) {
                 throw {
                     errorMessage: error.message || `error while running ${middleware.options.middlewareName} middleware, error: ${error.toString}`,
