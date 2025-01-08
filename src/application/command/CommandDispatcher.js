@@ -1,6 +1,5 @@
 const { tools } = require('../../utils/ToolManager');
 const EventManager = require('../events/EventManager');
-const { load } = require('../loader/Loader');
 const MiddlewareManager = require('../middleware/MiddlewareManager');
 const Command = require('./Command');
 const CommandRouter = require('./CommandRouter');
@@ -57,25 +56,24 @@ class CommandDispatcher {
         tools.logger.info(`registered handler for pattern: ${requestPattern}`);
     }
 
-    #runMiddlewares(middlewares, command, payload = {}) {
+    async #runMiddlewares(middlewares, command, payload = {}) {
         middlewares = middlewares.reverse();
+        let middlewaresStatus = [];
         let index = 0;
         const next = (state = true) => {
             if (state instanceof Error) {
-                console.log('NEXT CALLED WITH ERROR', state);
-                throw error;
+                throw state;
             }
             if (state === false) {
-                throw new Error('Middleware chain stopped');
+                throw new Error('middleware stopped');
             }
             if (state !== true) {
                 throw new Error(state);
             }
             index++;
-            runMiddleware();
         };
 
-        const runMiddleware = () => {
+        const runMiddleware = async () => {
             if (index >= middlewares.length) {
                 return;
             }
@@ -90,13 +88,16 @@ class CommandDispatcher {
             }
 
             try {
-                callableMiddleware(command, next, payload);
+                await callableMiddleware(command, next, payload);
             } catch (error) {
-                throw new Error(`error while running ${middleware.options.middlewareName} middleware, error: ${error.message || error.toString}`);;
+                throw {
+                    errorMessage: error.message || `error while running ${middleware.options.middlewareName} middleware, error: ${error.toString}`,
+                    middleware: middleware.options.middlewareName,
+                };
             }
         };
 
-        runMiddleware();
+        await runMiddleware();
     }
 
 
@@ -149,20 +150,27 @@ class CommandDispatcher {
         const handlerProxy = async () => {
             let result;
             let afterResult
-            let beforeMiddlewaresStatus = false;
+            let beforeMiddlewaresStatus = true;
             try {
                 if (beforeMiddlewares) {
-                    this.#runMiddlewares(beforeMiddlewares, command);
-                    beforeMiddlewaresStatus = true;
+                    await this.#runMiddlewares(beforeMiddlewares, command);
                 }
             } catch (error) {
-                tools.logger.error(error);
+                if (typeof error === 'object') {
+                    tools.logger.error(`Error while running middleware ${error.middleware}`);
+                    tools.logger.error(error.errorMessage);
+                    beforeMiddlewaresStatus = new Error(error.errorMessage)
+                } else {
+                    tools.logger.error('Error while running middlewares');
+                    tools.logger.error(error);
+                    beforeMiddlewaresStatus = error
+                }
             }
 
-            if (beforeMiddlewaresStatus) {
+            if (beforeMiddlewaresStatus === true) {
                 result = await handler[method](payload);
             } else {
-                result = 'error while running middlewares';
+                result = beforeMiddlewaresStatus.message || 'error while running middlewares';
             }
             afterResult = result;
 
@@ -177,9 +185,8 @@ class CommandDispatcher {
                         const middleware = afterMiddlewares[index];
                         try {
                             let oldIndex = index;
-                            middleware.handle(command, next, afterResult);
+                            await middleware.handle(command, next, afterResult);
                             if (oldIndex === index) {
-                                console.log('NEXT NOT CALLED');
                                 index++;
                             }
                         } catch (error) {

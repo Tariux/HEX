@@ -103,7 +103,6 @@ class SessionManager {
   #getCookie(name) {
     const cookies = this.#req.headers.cookie;
     if (!cookies) {
-      console.log('No cookies found in request headers');
       return null;
     }
     const cookiePairs = cookies.split('; ').map(pair => pair.split('='));
