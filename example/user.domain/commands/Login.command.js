@@ -1,3 +1,4 @@
+const { log } = require("util");
 const { tools } = require("../../../src/utils/ToolManager");
 const Auth = require("../models/entities/Auth");
 

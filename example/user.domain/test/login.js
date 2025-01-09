@@ -26,7 +26,7 @@ describe("User Login API Test Scenario", function () {
 
     it("should login", async function () {
         const loginData = {
-            userId: `EmailTest244011@mail.com`,
+            userId: `EmailTest156848@mail.com`,
             password: '12345678',
         };
 
@@ -34,7 +34,7 @@ describe("User Login API Test Scenario", function () {
         expect(loginResponse.status).to.equal(200);
         expect(loginResponse.data.status).to.equal('success');
         cookies = loginResponse.headers['set-cookie'];
-        // console.log('Login successful. Cookies:', cookies);
+        console.log('Login successful. Cookies:', cookies);
     });
 
     it("should check session", async function () {
@@ -50,6 +50,8 @@ describe("User Login API Test Scenario", function () {
         });
         expect(checkResponse.status).to.equal(200);
         expect(checkResponse.data.status).to.equal('success');
+        console.log('Check successful. Cookies:', checkResponse.data);
+
     });
 
     it("should get all users (need to be login)", async function () {
@@ -58,6 +60,7 @@ describe("User Login API Test Scenario", function () {
                 Cookie: cookies.join('; ')
             }
         });
+        console.log('Get successful. Cookies:', response.data.data.length);
         expect(response.data.status).to.equal('success');
     });
 

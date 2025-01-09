@@ -3,5 +3,15 @@
         "activityBar.background": "#063240",
         "titleBar.activeBackground": "#084659",
         "titleBar.activeForeground": "#F3FBFE"
-    }
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:user.domain}/storage/user_db.db",
+            "name": "user",
+            "group": "hex"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }

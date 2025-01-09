@@ -85,7 +85,8 @@ class UserRepository {
           profiles.lastName,
           profiles.email,
           profiles.phoneNumber,
-          auth.password
+          auth.password,
+          auth.role
         FROM users
         JOIN profiles ON users.id = profiles.userId
         JOIN auth ON users.id = auth.userId
@@ -110,6 +111,7 @@ class UserRepository {
         },
         auth: {
           password: user.password,
+          role: user.role,
         },
         metadata: {
           createdAt: user.createdAt,

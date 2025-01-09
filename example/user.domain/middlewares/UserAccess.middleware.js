@@ -10,13 +10,15 @@ class UserAccess {
     }
 
     async handle(command, next) {
+        console.log('UserAccess Middleware Called');
+
         const sessions = command.data.session.getSession(true);
         if (!sessions || !sessions.data) {
-            next('session not found');
+            throw new Error('session not found');
         }
         const validateUser = await this.loginService.check({ userId: sessions.data.userId, password: sessions.data.password });
         if (!validateUser) {
-            next('check failed');
+            throw new Error('check failed');
         } else {
             next();
         }

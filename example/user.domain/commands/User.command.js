@@ -38,13 +38,12 @@ class UserCommand {
                 method: 'GET',
                 target: '/users',
                 handler: 'getUsers',
-                middlewares: ['UserAccess']
             },
             {
                 method: 'POST',
                 target: '/users',
                 handler: 'getUsers',
-                middlewares: ['UserAccess']
+                middlewares: ['UserAccess', 'UserRole']
             },
             {
                 method: 'GET',

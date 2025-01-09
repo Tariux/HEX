@@ -58,49 +58,56 @@ class CommandDispatcher {
 
     async #runMiddlewares(middlewares, command, payload = {}) {
         middlewares = middlewares.reverse();
-        let middlewaresStatus = [];
-        let index = 0;
-        const next = (state = true) => {
-            if (state instanceof Error) {
-                throw state;
+    
+        class NextError extends Error {
+            constructor() {
+                super('Next called');
+                this.name = 'NextError';
             }
-            if (state === false) {
-                throw new Error('middleware stopped');
-            }
-            if (state !== true) {
-                throw new Error(state);
-            }
-            index++;
-        };
-
-        const runMiddleware = async () => {
+        }
+    
+        const next = async (index) => {
             if (index >= middlewares.length) {
                 return;
             }
-
+    
             const middleware = middlewares[index];
             let callableMiddleware;
-
-            if (typeof middleware === 'object') {
-                callableMiddleware = middleware.handle;
+    
+            if (typeof middleware === 'object' && typeof middleware.handle === 'function') {
+                callableMiddleware = middleware.handle.bind(middleware);
             } else if (typeof middleware === 'function') {
                 callableMiddleware = middleware;
+            } else {
+                throw new Error(`Middleware at index ${index} is not a valid middleware`);
             }
-
+    
             try {
-                await callableMiddleware.bind(middleware, command, next, payload)();
+                await callableMiddleware(command, async () => {
+                    throw new NextError(); 
+                }, payload);
             } catch (error) {
-                throw {
-                    errorMessage: error.message || `error while running ${middleware.options.middlewareName} middleware, error: ${error.toString}`,
-                    middleware: middleware.options.middlewareName,
-                };
+                if (error instanceof NextError) {
+                    await next(index + 1);
+                } else {
+                    throw {
+                        errorMessage: error.message || `Error while running middleware at index ${index}, error: ${error.toString()}`,
+                        middleware: middleware.options?.middlewareName || `Middleware at index ${index}`,
+                        originalError: error, // Include the original error for debugging
+                    };
+                }
             }
         };
-
-        await runMiddleware();
+    
+        // Start the middleware chain
+        try {
+            await next(0);
+        } catch (error) {
+            // Handle the final error and log it
+            console.error('Middleware chain failed:', error.errorMessage);
+            throw error; // Rethrow the error if needed
+        }
     }
-
-
     #loadMiddlewares(middlewares) {
         const loadedMiddlewares = [];
         if (typeof middlewares === 'string') {

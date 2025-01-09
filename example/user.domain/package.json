@@ -18,6 +18,6 @@
   "author": "opiumdev <opiumdev@proton.me>",
   "license": "MIT",
   "dependencies": {
-    "hex-micro": "^1.1.1-beta.5"
+    "hex-micro": "^1.1.1-beta.13"
   }
 }

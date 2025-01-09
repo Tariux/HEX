@@ -43,7 +43,7 @@ module.exports = {
     "database": {
         user_db: {
             type: 'sqlite',
-            filename: './storage/user_db.sqlite1',
+            filename: './storage/user_db.db',
             initialQuery: sqliteIntitalQueryConfig,
         },
     },
