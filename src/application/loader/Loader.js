@@ -48,7 +48,7 @@ class Loader {
         }
 
         Loader.pool.set(entityName, entityInstance);
-        tools.logger.info(`registered entity key: ${entityName}`)
+        tools.logger.info(`entity loaded: ${entityName}`)
         return entityInstance;
 
     }

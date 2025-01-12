@@ -1,6 +1,6 @@
-class UserRole {
+class AdminRole {
     static options = {
-        middlewareName: 'UserRole',
+        middlewareName: 'AdminRole',
         type: 'before',
         loader: ['domain.services.Login', 'domain.services.User'],
     };
@@ -11,7 +11,7 @@ class UserRole {
     }
 
     async handle(command, next) {
-        console.log('UserRole Middleware Called');
+        console.log('AdminRole Middleware Called');
         
         const sessions = command.data.session.getSession(true);
         if (!sessions || !sessions.data) {
@@ -21,7 +21,7 @@ class UserRole {
         if (!user || !user.auth) {
             throw new Error('user not found');
         }
-        if (user.auth.role === 'user') {
+        if (user.auth.role === 'admin') {
             await next();
         }
         throw new Error('access denied, role: ' + user.auth.role);
@@ -30,4 +30,4 @@ class UserRole {
 };
 
 
-module.exports = UserRole;
+module.exports = AdminRole;

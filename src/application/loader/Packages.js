@@ -9,26 +9,26 @@ class PackageValidator {
                 const packageInstance = require(packageInput);
                 packageInstace;
             } catch (error) {
-                tools.logger.error(`Cannot load package: ${packageInput}`, error);
+                tools.logger.error(`cannot load package: ${packageInput}`, error);
                 return null;
             }
         } else if (typeof packageInput === "object" && packageInput !== null) {
             return packageInput;
         } else {
-            tools.logger.error(`Invalid package input type: ${typeof packageInput}`);
+            tools.logger.error(`invalid package input type: ${typeof packageInput}`);
             return null;
         }
     }
 
     static validateFilePath(filePath) {
         if (path.extname(filePath) !== ".js") {
-            tools.logger.error(`Invalid file extension for path: ${filePath}`);
+            tools.logger.error(`invalid file extension for path: ${filePath}`);
             return null;
         }
         try {
             return require(filePath);
         } catch (error) {
-            tools.logger.error(`Cannot load package from file: ${filePath}`, error);
+            tools.logger.error(`cannot load package from file: ${filePath}`, error);
             return null;
         }
     }
@@ -49,17 +49,17 @@ class PackageManager {
 
     static addPackage(packageName, instance) {
         if (PackageManager.#packages.has(packageName)) {
-            tools.logger.warn(`Package ${packageName} already exists`);
+            tools.logger.warn(`package ${packageName} already exists`);
             return;
         }
         PackageManager.#packages.set(packageName, new Package(packageName, instance));
-        tools.logger.info(`Package ${packageName} registered`);
+        tools.logger.info(`package loaded: ${packageName}`);
     }
 
     static getPackage(packageName, options = {}) {
         const packageEntry = PackageManager.#packages.get(packageName);
         if (!packageEntry) {
-            tools.logger.warn(`Package ${packageName} not found`);
+            tools.logger.warn(`package ${packageName} not found`);
             return null;
         }
 
@@ -83,7 +83,7 @@ class PackageManager {
                 packageInstance = PackageValidator.validatePackage(packageInput);
             }
             if (!packageInstance) {
-                tools.logger.error(`Invalid package input`, packageInput);
+                tools.logger.error(`invalid package input`, packageInput);
                 return;
             }
 
@@ -91,7 +91,7 @@ class PackageManager {
             
             PackageManager.addPackage(name, packageInstance);
         } catch (error) {
-            tools.logger.error(`Failed to register package`, error);
+            tools.logger.error(`failed to register package`, error);
             tools.logger.error(error);
         }
     }

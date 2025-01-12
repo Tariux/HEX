@@ -70,7 +70,7 @@ class Events {
                     tools.logger.error(error);
                 }
             });
-            tools.logger.info(`registered event for pattern: ${eventKey}`);
+            tools.logger.info(`event loaded for pattern: ${eventKey}`);
         } catch (error) {
             tools.logger.error(`failed to register event from`, filePath);
             tools.logger.error(error);

@@ -23,7 +23,7 @@ class CommandDispatcher {
         commandDescriptor.routes.forEach(route => {
             const pattern = Command.pattern({ ...commandDescriptor, ...route });
             if (this.handlers.has(pattern)) {
-                throw new Error(`Handler for command pattern '${pattern}' is already registered.`);
+                throw new Error(`handler for command pattern '${pattern}' is already registered.`);
             }
             this.handlers.set(pattern, { handler, method: route.handler, middlewares: route.middlewares });
         });
@@ -53,7 +53,7 @@ class CommandDispatcher {
                 this.emitter.publish(`${command.signature}:RESPONSE`, command);
             }
         });
-        tools.logger.info(`registered handler for pattern: ${requestPattern}`);
+        tools.logger.info(`command handler loaded: ${requestPattern}`);
     }
 
     async #runMiddlewares(middlewares, command, payload = {}) {

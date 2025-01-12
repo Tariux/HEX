@@ -36,7 +36,7 @@ class ConfigCenter {
             }
         };
 
-        tools.logger.info(`configs are loaded ${this.environmentPath ? 'custom' : 'default'}`, environment);
+        tools.logger.info(`config loaded ${this.environmentPath ? 'custom' : 'default'}`, environment);
 
         this.#config = Object.freeze(finalConfig);
         this.#initialized = true;

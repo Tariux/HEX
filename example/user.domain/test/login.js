@@ -55,13 +55,20 @@ describe("User Login API Test Scenario", function () {
     });
 
     it("should get all users (need to be login)", async function () {
-        const response = await axios.post('http://localhost:3000/users', {}, {
-            headers: {
-                Cookie: cookies.join('; ')
-            }
+        await new Promise((resolve, reject) => {
+            setTimeout(async () => {
+                resolve(true)
+            }, 5000);
+    
         });
-        console.log('Get successful. Cookies:', response.data.data.length);
-        expect(response.data.status).to.equal('success');
+        const response = await axios.post('http://localhost:3000/users', {}, {
+                headers: {
+                    Cookie: cookies.join('; ')
+                }
+            });
+            console.log('Get successful. Cookies:', response.data.data.length);
+            expect(response.data.status).to.equal('success');
+    
     });
 
 
