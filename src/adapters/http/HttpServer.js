@@ -20,18 +20,17 @@ class HttpServer extends BaseServer {
         try {
 
             this.app = http.createServer((req, res) => {
-                
-                if (req.headers.origin) {
-                    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-                    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-                    res.setHeader('Access-Control-Allow-Credentials', 'true');
-                }
+
+                this.#setCORSHeaders(req, res);
 
                 if (req.method === 'OPTIONS') {
-                    res.writeHead(200);
+                    res.writeHead(204);
                     res.end();
                     return;
                 }
+
+
+
                 const queryParams = this.#parseQueryParams(req);
 
                 let body = '';
@@ -84,6 +83,14 @@ class HttpServer extends BaseServer {
             this.error(`Error starting HTTP server: ${error.message}`);
             throw error;
         }
+    }
+
+    #setCORSHeaders(req, res) {
+        const origin = req.headers.origin;
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     }
 
     stop() {

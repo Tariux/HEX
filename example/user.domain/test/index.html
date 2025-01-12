@@ -1,162 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Test Page</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #e6e6e6, #ffffff);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-        input {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #messages {
-            margin-top: 15px;
-            font-size: 14px;
-            color: green;
-            text-align: center;
-        }
-        .error {
-            color: red;
-        }
-        .welcome {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logout-button {
-            margin-top: 10px;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #e6e6e6, #ffffff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      input {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #messages {
+        margin-top: 15px;
+        font-size: 14px;
+        color: green;
+        text-align: center;
+      }
+      .error {
+        color: red;
+      }
+      .welcome {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .logout-button {
+        margin-top: 10px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container" id="app">
-        <!-- Login Form -->
-        <form id="loginForm" style="display:none;">
-            <input type="email" id="userId" placeholder="Email" required />
-            <input type="password" id="password" placeholder="Password" required />
-            <button type="submit">Login</button>
-        </form>
+      <!-- Login Form -->
+      <form id="loginForm" style="display: none">
+        <input type="email" id="userId" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
 
-        <!-- Welcome Section -->
-        <div id="welcomeSection" style="display:none;" class="welcome">
-            <h2>Welcome, User!</h2>
-            <button id="logoutButton" class="logout-button">Log Out</button>
-        </div>
+      <!-- Welcome Section -->
+      <div id="welcomeSection" style="display: none" class="welcome">
+        <h2>Welcome, User!</h2>
+        <button id="logoutButton" class="logout-button">Log Out</button>
+      </div>
 
-        <div id="messages"></div>
+      <div id="messages"></div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-        const loginForm = document.getElementById("loginForm");
-        const welcomeSection = document.getElementById("welcomeSection");
-        const logoutButton = document.getElementById("logoutButton");
-        const messages = document.getElementById("messages");
+      const loginForm = document.getElementById("loginForm");
+      const welcomeSection = document.getElementById("welcomeSection");
+      const logoutButton = document.getElementById("logoutButton");
+      const messages = document.getElementById("messages");
 
-        // Check if user is already logged in
-        function checkLoginStatus() {
-            const cookie = document.cookie;
-            if (cookie.includes("session=") || localStorage.getItem("session")) {
-              console.log('USER IS LOGGED IN');
-              console.log(localStorage.getItem("session"));
-              
-                // User is logged in
-                loginForm.style.display = "none";
-                welcomeSection.style.display = "block";
+      // Check if user is already logged in
+      async function checkLoginStatus() {
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const checkResponse = await axios.post(
+              "http://localhost:3000/check",
+              {},
+              {
+                withCredentials: true, // Include credentials (cookies)
+              }
+            );
+            const checkData = await checkResponse.data;
+            if (checkData.status === "success") {
+              loginForm.style.display = "none";
+              welcomeSection.style.display = "block";
             } else {
-              console.log('USER IS NOT LOGGED IN', localStorage.getItem("session"));
-              console.log(localStorage.getItem("session"));
-
-                // User is not logged in
-                loginForm.style.display = "block";
-                welcomeSection.style.display = "none";
+              localStorage.removeItem("token");
+              loginForm.style.display = "block";
+              welcomeSection.style.display = "none";
             }
+          } catch (error) {
+            console.error("Error checking login status:", error);
+            localStorage.removeItem("token");
+            loginForm.style.display = "block";
+            welcomeSection.style.display = "none";
+          }
+        } else {
+          loginForm.style.display = "block";
+          welcomeSection.style.display = "none";
         }
+      }
 
-        // Event listener for form submission
-        loginForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            messages.textContent = "Trying to login...";
+      // Event listener for form submission
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        messages.textContent = "Trying to login...";
 
-            const userId = document.getElementById("userId").value;
-            const password = document.getElementById("password").value;
+        const userId = document.getElementById("userId").value;
+        const password = document.getElementById("password").value;
 
-            try {
-                const loginResponse = await fetch("http://localhost:3000/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ userId, password }),
-                    credentials: "include",
-                    mode: "cors",
-                });
+        try {
+          const loginPayload = { userId, password };
 
-                const loginData = await loginResponse.json();
-
-                if (loginResponse.ok && loginData.status === "success") {
-                    messages.textContent = "Login successful.";
-                    loginForm.style.display = "none";
-                    welcomeSection.style.display = "block";
-                    localStorage.setItem("session", true);
-
-                } else {
-                    messages.textContent = "Login failed. " + (loginData.message || '');
-                }
-            } catch (error) {
-                messages.textContent = "An error occurred during login.";
-                console.error(error);
+          const loginResponse = await axios.post(
+            "http://localhost:3000/login",
+            loginPayload,
+            {
+              withCredentials: true,
             }
-        });
+          );
+          const loginData = loginResponse.data;
+          if (loginData.status === "success") {
+            messages.textContent = "Login successful.";
+            loginForm.style.display = "none";
+            welcomeSection.style.display = "block";
+            localStorage.setItem("token", loginData.token);
+          } else {
+            messages.textContent = "Login failed. " + (loginData.message || "");
+          }
+        } catch (error) {
+          messages.textContent = "An error occurred during login.";
+          console.error(error);
+        }
+      });
 
-        // Event listener for logout button
-        logoutButton.addEventListener("click", () => {
-          localStorage.setItem("session", '');
-            // Clear the session cookie
-            document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            // Redirect to login form
-            location.reload();
-        });
+      // Event listener for logout button
+      logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("token");
+        loginForm.style.display = "block";
+        welcomeSection.style.display = "none";
+        messages.textContent = "Logged out successfully.";
+      });
 
-        // Check login status on page load
-        window.onload = checkLoginStatus;
+      // Check login status on page load
+      window.onload = checkLoginStatus;
     </script>
-</body>
+  </body>
 </html>

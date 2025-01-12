@@ -36,7 +36,7 @@ class SessionManager {
         sameSite: 'strict',
         // secure: true, // Uncomment if using HTTPS
       });
-      return true;
+      return token;
     } catch (error) {
       console.log('create cookie error', error);
       return false;
