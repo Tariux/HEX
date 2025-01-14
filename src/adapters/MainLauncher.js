@@ -8,9 +8,8 @@ class MainLauncher {
     constructor() {
         this.config = ConfigCenter.getInstance().get('servers');
         this.servers = tools.helper.groupBy(Object.values(this.config), 'type');
-        
         if (this.servers.http) {
-          this.launchers.push(new HttpLauncher(this.servers.http))  
+          this.launchers.push(new HttpLauncher([...this.servers.http, ...this.servers.quic]))  
         } 
         if (this.servers.rpc) {
             this.launchers.push(new RpcLauncher(this.servers.rpc))  

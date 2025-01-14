@@ -66,6 +66,12 @@ module.exports = {
             "host": "localhost",
             "port": 8008,
             "type": "http",
-        }
+        },
+        {
+            "name": "mock-quic-server",
+            "host": "localhost",
+            "port": 2222,
+            "type": "quic",
+        },
     ]
 }
