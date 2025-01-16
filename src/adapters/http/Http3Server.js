@@ -1,6 +1,6 @@
 const fs = require('fs');
-const { createServer } = require('@socketsecurity/quic'); // Modern QUIC library
 const url = require('url');
+const nghttp3 = require('nghttp3');
 const ConfigCenter = require('../../config/ConfigCenter');
 const generateCertificates = require('../../../shared/utils/generateCertificates');
 const BaseServer = require('../BaseServer');
@@ -10,37 +10,51 @@ class Http3Server extends BaseServer {
     constructor(config) {
         super(config);
         this.credentials = ConfigCenter.getInstance().get('credentials');
-        this.port = typeof config.ssl === 'number' ? config.ssl : config.port + 1;
+        this.port = typeof config.ssl === 'number' ? config.ssl : (config.port || 443) + 1;
+        this.app = null;
         this.server = null;
     }
 
     #generateCertificates() {
-        const cert = generateCertificates(this.credentials.keyPath, this.credentials.certPath);
-        if (!cert) {
-            tools.logger.error('SSL: Failed to generate certificates');
-            throw new Error('Certificate generation failed');
+        try {
+            const cert = generateCertificates(this.credentials.keyPath, this.credentials.certPath);
+            if (!cert) {
+                throw new Error('Certificate generation failed');
+            }
+            tools.logger.info('SSL: Certificates generated successfully');
+            return cert;
+        } catch (error) {
+            tools.logger.error(`SSL: ${error.message}`);
+            throw error;
         }
-        tools.logger.info('SSL: Certificates generated successfully');
-        return cert;
     }
 
     #createServerOptions() {
-        return {
-            key: fs.readFileSync(this.credentials.keyPath),
-            cert: fs.readFileSync(this.credentials.certPath),
-            allowHTTP1: true, // Enable fallback to HTTP/1.1
-            maxConnections: 1000, // Example of a secure connection limit
-            maxHeaderListSize: 8000, // Limit headers size for security
-        };
+        try {
+            return {
+                key: fs.readFileSync(this.credentials.keyPath),
+                cert: fs.readFileSync(this.credentials.certPath),
+                allowHTTP1: true,
+            };
+        } catch (error) {
+            tools.logger.error(`Error reading SSL files: ${error.message}`);
+            throw error;
+        }
     }
 
     #parseQueryParams(target) {
-        const parsedUrl = url.parse(target, true);
-        return parsedUrl.query;
+        try {
+            const parsedUrl = url.parse(target, true);
+            return parsedUrl.query;
+        } catch (error) {
+            tools.logger.error(`Error parsing query parameters: ${error.message}`);
+            return {};
+        }
     }
 
     #handleStream(stream, headers) {
         let body = '';
+
         stream.on('data', (chunk) => {
             body += chunk.toString();
         });
@@ -48,13 +62,13 @@ class Http3Server extends BaseServer {
         stream.on('end', async () => {
             try {
                 const queryParams = this.#parseQueryParams(headers[':path'] || '');
-
                 let inputData = null;
+
                 if (headers['content-type'] === 'application/json') {
                     try {
                         inputData = JSON.parse(body);
-                    } catch (error) {
-                        this.#sendResponse(stream, 400, 'application/json', JSON.stringify({ error: 'Invalid JSON format' }));
+                    } catch {
+                        this.#sendResponse(stream, 400, 'text/plain', 'Invalid JSON format');
                         return;
                     }
                 }
@@ -66,16 +80,17 @@ class Http3Server extends BaseServer {
                     queryParams,
                 });
 
-                const contentType = command?.dispatcher?.contentType || 'application/json';
-                this.#sendResponse(stream, command?.statusCode || 200, contentType, JSON.stringify(command.response));
+                const contentType = command?.dispatcher?.contentType || 'text/plain';
+                this.#sendResponse(stream, command?.statusCode || 200, contentType, command.response);
             } catch (error) {
-                this.#sendResponse(stream, 500, 'application/json', JSON.stringify({ error: `Server error: ${error.message}` }));
+                tools.logger.error(`Error processing stream: ${error.message}`);
+                this.#sendResponse(stream, 500, 'text/plain', `Server error: ${error.message}`);
             }
         });
 
         stream.on('error', (error) => {
             tools.logger.error(`Stream error: ${error.message}`);
-            this.#sendResponse(stream, 500, 'application/json', JSON.stringify({ error: `Stream error: ${error.message}` }));
+            this.#sendResponse(stream, 500, 'text/plain', `Stream error: ${error.message}`);
         });
     }
 
@@ -84,50 +99,55 @@ class Http3Server extends BaseServer {
             ':status': statusCode,
             'content-type': contentType,
         };
-        stream.respond(headers);
-        stream.end(response);
+
+        try {
+            stream.respond({ headers });
+            stream.end(response);
+        } catch (error) {
+            tools.logger.error(`Error sending response: ${error.message}`);
+        }
     }
 
-    async listen() {
+    listen() {
         try {
             this.#generateCertificates();
             const serverOptions = this.#createServerOptions();
 
-            this.server = createServer(serverOptions, (stream, headers) => {
+            this.app = nghttp3.createServer(serverOptions, (stream, headers) => {
                 this.#handleStream(stream, headers);
             });
 
-            this.server.on('error', (error) => {
+            this.app.on('error', (error) => {
                 tools.logger.error(`HTTP/3 server error: ${error.message}`);
             });
 
-            await new Promise((resolve, reject) => {
-                this.server.listen(this.port, (err) => {
-                    if (err) {
-                        tools.logger.error(`Error starting HTTP/3 server: ${err.message}`);
-                        return reject(err);
-                    }
+            return new Promise((resolve) => {
+                this.server = this.app.listen(this.port, () => {
                     tools.logger.info(`HTTP/3 server listening on port ${this.port}`);
                     resolve();
                 });
             });
         } catch (error) {
-            tools.logger.error(`Error initializing HTTP/3 server: ${error.message}`);
+            tools.logger.error(`Error starting HTTP/3 server: ${error.message}`);
             throw error;
         }
     }
 
-    async stop() {
-        if (!this.server) return;
-
+    stop() {
         return new Promise((resolve, reject) => {
+            if (!this.server) {
+                resolve();
+                return;
+            }
+
             this.server.close((err) => {
                 if (err) {
                     tools.logger.error(`Error stopping HTTP/3 server: ${err.message}`);
-                    return reject(err);
+                    reject(err);
+                } else {
+                    tools.logger.info('HTTP/3 server stopped successfully');
+                    resolve();
                 }
-                tools.logger.info('HTTP/3 server stopped successfully');
-                resolve();
             });
         });
     }

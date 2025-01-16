@@ -14,7 +14,7 @@ class HttpLauncher extends BaseLauncher {
 
     #launchServer(server) {
         if (server.type.toUpperCase() === 'QUIC') {
-            this.servers.set(`${server.type}:${server.name}`, new Http3Server(server));
+            // this.servers.set(`${server.type}:${server.name}`, new Http3Server(server));
         } else if (server.ssl && server.ssl === true) {
             this.servers.set(`${server.type}:${server.name}`, new Http2Server(server));
         } else {
