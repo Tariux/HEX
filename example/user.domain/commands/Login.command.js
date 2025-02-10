@@ -77,7 +77,6 @@ class LoginCommand {
             }
             const validateUser = await this.loginService.check({userId: sessions.data.userId, password: sessions.data.password});
             console.log('THE validateUser', validateUser);
-            
             if (!validateUser) {
                 return {
                     status: 'fail',
